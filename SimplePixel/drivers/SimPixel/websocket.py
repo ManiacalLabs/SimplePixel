@@ -29,6 +29,7 @@ class Client(WebSocket):
     def update(self, pixels=None, positions=None):
         if self.connected:
             if pixels:
+                print(pixels)
                 self.sendFragmentStart(self.PIXEL_START)
                 self.sendFragmentEnd(pixels)
             if positions:
@@ -55,9 +56,6 @@ class Server:
 
     def stop(self):
         self.ws_server.stop()
-
-    def close(self):
-        self.ws_server.close()
 
     def close(self):
         self.ws_server.close()

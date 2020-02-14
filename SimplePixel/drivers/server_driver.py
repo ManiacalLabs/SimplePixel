@@ -134,6 +134,8 @@ class ServerDriver(DriverBase, StaticCache):
         if pixel_positions:
             self.set_pixel_positions(pixel_positions)
 
+        self.start()
+
     def start(self):
         self.server = self.cache().get_server(self.address)
         self._on_positions()

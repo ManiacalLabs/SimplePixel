@@ -8,7 +8,7 @@ DEFAULT_SIMPIXEL_URL = 'http://simpixel.io'
 class SimPixelOpenerServer(websocket.Server):
     def __init__(self, port, selectInterval):
         super().__init__(port, selectInterval)
-        SimPixel.open_browser()
+        # SimPixel.open_browser()
 
 
 class SimPixel(ServerDriver):
@@ -32,6 +32,7 @@ class SimPixel(ServerDriver):
             pixel_positions:  the positions of the LEDs in 3-d space.
             **kwds:  keywords passed to DriverBase.
         """
+        print(kwds)
         super().__init__(pixels, address=port, **kwds)
 
     def _on_positions(self):
@@ -45,7 +46,7 @@ class SimPixel(ServerDriver):
         if not self.server:
             raise ValueError(
                 'Tried to send a packet before Layout.start() was called')
-        self.server.update(pixels=self._buf)
+        self.server.update(pixels=data)
 
 
 open_browser = SimPixel.open_browser
