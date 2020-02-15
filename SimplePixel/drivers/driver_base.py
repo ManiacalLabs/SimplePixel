@@ -14,17 +14,21 @@ class DriverBase(object):
     """Base driver class to build other drivers from"""
 
     def __init__(self, pixels, c_order=ChannelOrder.RGB, gamma=None):
+        self.gamma = gamma or range(256)
+        self.c_order = c_order
+
+        self.lastUpdate = 0
+        self.pixels = None
+        self.numLEDs = None
+        self.bufByteCount = None
+        self._buf = None
+
+    def setup(self, pixels):
         self.pixels = pixels
         self.numLEDs = self.pixels.numLEDs
-        self.gamma = gamma or range(256)
-
-        self.c_order = c_order
 
         self.bufByteCount = int(3 * self.numLEDs)
         self._buf = [0] * self.bufByteCount
-
-        self._thread = None
-        self.lastUpdate = 0
 
     def __enter__(self):
         return self
@@ -32,10 +36,6 @@ class DriverBase(object):
     def __exit__(self, type, value, traceback):
         pass
 
-    def cleanup(self):
-        return self.__exit__(None, None, None)
-
-    # Push new data to strand
     def update(self):
         self._update(self.pixels.buffer)
 

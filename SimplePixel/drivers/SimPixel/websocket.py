@@ -44,13 +44,10 @@ class Server:
         self.thread.start()
 
     def stop(self):
-        self.ws_server.stop()
-
-    def close(self):
         self.ws_server.close()
 
     def close(self):
-        self.server.close()
+        self.ws_server.close()
 
     def is_alive(self):
         return self.thread.is_alive()
@@ -60,6 +57,5 @@ class Server:
         try:
             self.ws_server.serveforever()
         except:
-            raise
             pass
         log.info('WebSocket server closed')

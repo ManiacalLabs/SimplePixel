@@ -1,6 +1,7 @@
 import errno, struct, threading, uuid
 from .. driver_base import DriverBase
 from . websocket import Server
+from time import sleep
 
 ADDRESS_IN_USE_ERROR = """
 
@@ -27,7 +28,13 @@ class SimPixel(DriverBase):
         if pixel_positions:
             self.set_pixel_positions(pixel_positions)
 
-        # self.start()
+    def __exit__(self, type, value, traceback):
+        self.cleanup()
+
+    def setup(self, pixels):
+        super().setup(pixels)
+        sleep(0.1) # needs a little time before starting server
+        self.start()
 
     def start(self):
         try:
@@ -40,9 +47,10 @@ class SimPixel(DriverBase):
             raise
 
     def set_pixel_positions(self, pixel_positions):
-        # Flatten list of led positions.
-        pl = [c for p in pixel_positions for c in p]
-        self.pixel_positions = bytearray(struct.pack('<%sh' % len(pl), *pl))
+        if not self.pixel_positions: # ignore if already set
+            # Flatten list of led positions.
+            pl = [c for p in pixel_positions for c in p]
+            self.pixel_positions = bytearray(struct.pack('<%sh' % len(pl), *pl))
 
 
     def add_websock(self, oid, send_pixels):
@@ -55,11 +63,11 @@ class SimPixel(DriverBase):
             pass
 
     def cleanup(self):
+        print('Closing websocket server...')
         self.server.close()
 
     def _update(self, data):
         self._buf = data
-        # print(self._buf)
         for ws in self.websocks.values():
             ws(self._buf)
 
