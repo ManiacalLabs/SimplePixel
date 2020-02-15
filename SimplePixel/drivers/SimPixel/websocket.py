@@ -7,50 +7,39 @@ class Client(WebSocket):
     POSITION_START = bytearray([0x00, 0x00])
     PIXEL_START = bytearray([0x00, 0x01])
 
-    def __init__(self, *args, server):
+    def __init__(self, *args, driver):
         super().__init__(*args)
-        self.server = server
+        self.driver = driver
         self.connected = False
+        self.oid = None
         log.debug('Server started...')
 
     def handleConnected(self):
         log.debug('Connected:{}'.format(self.address))
         self.connected = True
-        self.server.add_client(self)
+        self.oid = uuid.uuid1()
+        self.driver.add_websock(self.oid, self.send_pixels)
+        self.sendFragmentStart(self.POSITION_START)
+        self.sendFragmentEnd(self.driver.pixel_positions)
 
     def handleClose(self):
-        self.server.remove_client(self)
+        self.driver.remove_websock(self.oid)
         self.connected = False
         log.debug('Closed:{}'.format(self.address))
 
     def handleMessage(self):
         pass
 
-    def update(self, pixels=None, positions=None):
+    def send_pixels(self, pixels):
         if self.connected:
-            if pixels:
-                print(pixels)
-                self.sendFragmentStart(self.PIXEL_START)
-                self.sendFragmentEnd(pixels)
-            if positions:
-                self.sendFragmentStart(self.POSITION_START)
-                self.sendFragmentEnd(positions)
+            self.sendFragmentStart(self.PIXEL_START)
+            self.sendFragmentEnd(pixels)
 
 
 class Server:
-    def __init__(self, port, selectInterval):
-        self.clients = set()
-        self.state = {}
 
-        try:
-            self.ws_server = SimpleWebSocketServer(
-                '', port, Client, server=self, selectInterval=selectInterval)
-        except PermissionError as e:
-            if port < 1024:
-                msg = PORT_BELOW_1024_ERROR.format(**locals())
-                raise ValueError(msg, *e.args)
-            raise e
-
+    def __init__(self, port, **kwds):
+        self.ws_server = SimpleWebSocketServer('', port, Client, **kwds)
         self.thread = threading.Thread(target=self.target, daemon=True)
         self.thread.start()
 
@@ -60,6 +49,9 @@ class Server:
     def close(self):
         self.ws_server.close()
 
+    def close(self):
+        self.server.close()
+
     def is_alive(self):
         return self.thread.is_alive()
 
@@ -68,28 +60,6 @@ class Server:
         try:
             self.ws_server.serveforever()
         except:
+            raise
             pass
         log.info('WebSocket server closed')
-
-    def update(self, **state):
-        self.state.update(state)
-        for client in self.clients.copy():
-            client.update(**state)
-
-    def add_client(self, client):
-        self.clients.add(client)
-        client.update(**self.state)
-
-    def remove_client(self, client):
-        try:
-            self.clients.remove(client)
-        except:
-            pass
-
-
-PORT_BELOW_1024_ERROR = """
-SimPixel attempted to open a port at {port} and got a PermissionError.
-
-Many systems disallow binding to any port below 1024 for non-root users.
-Try again with a port number that's 1024 or greater.
-"""

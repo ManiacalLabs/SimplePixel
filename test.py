@@ -19,6 +19,8 @@ sp.setMasterBrightness(255)
 
 hue_map = colors.diagonal_matrix(16)[::-1]
 
+sleep(1)
+sp.start()
 
 try:
     while True:
@@ -30,26 +32,30 @@ try:
         #     sp.update()
         #     sleep(0.01)
 
-        for s in range(0, 256, 16):
-            pixels.clear()
-            for i in range(16):
-                pixels.set(s + i, colors.Red)
-            sp.update()
-            sleep(0.25)
+        pixels.clear()
+        for i in range(16):
+            pixels.set(i, colors.Red)
+        sp.update()
+        sleep(1)
 
-        for s in range(0, 256, 16):
-            pixels.clear()
-            for i in range(16):
-                pixels.set(s + i, colors.Green)
-            sp.update()
-            sleep(0.25)
+        pixels.clear()
+        for i in range(16):
+            pixels.set(i, colors.Green)
+        sp.update()
+        sleep(1)
 
-        for s in range(0, 256, 16):
+        pixels.clear()
+        for i in range(16):
+            pixels.set(i, colors.Blue)
+        sp.update()
+        sleep(1)
+
+        for s in range(0, 256):
             pixels.clear()
             for i in range(16):
-                pixels.set(s + i, colors.Blue)
+                pixels.set(i, colors.hue_rainbow[s])
             sp.update()
-            sleep(0.25)
+            sleep(0.01)
 
 except KeyboardInterrupt:
     # matrix.clear()

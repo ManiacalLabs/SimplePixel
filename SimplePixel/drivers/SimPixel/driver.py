@@ -1,30 +1,17 @@
-import struct, webbrowser
-from . import websocket
-from .. server_driver import ServerDriver
+import errno, struct, threading, uuid
+from .. driver_base import DriverBase
+from . websocket import Server
 
-DEFAULT_SIMPIXEL_URL = 'http://simpixel.io'
+ADDRESS_IN_USE_ERROR = """
 
-
-class SimPixelOpenerServer(websocket.Server):
-    def __init__(self, port, selectInterval):
-        super().__init__(port, selectInterval)
-        # SimPixel.open_browser()
+Port {0} on your machine is already in use.
+Perhaps BiblioPixel is already running on your machine?
+"""
 
 
-class SimPixel(ServerDriver):
-    """
-    Output a simulation of your display to your browser at http://simpixel.io
-    """
+class SimPixel(DriverBase):
 
-    SERVER_CLASS = SimPixelOpenerServer
-    SERVER_KWDS = {'selectInterval': 0.001}
-
-    @staticmethod
-    def open_browser(url=DEFAULT_SIMPIXEL_URL, new=0, autoraise=True):
-        if url and not url.startswith('no'):
-            webbrowser.open(url, new=new, autoraise=autoraise)
-
-    def __init__(self, pixels, port=1337, **kwds):
+    def __init__(self, num=1024, port=1337, pixel_positions=None, **kwds):
         """
         Args:
             num:  number of LEDs being visualizer.
@@ -32,22 +19,50 @@ class SimPixel(ServerDriver):
             pixel_positions:  the positions of the LEDs in 3-d space.
             **kwds:  keywords passed to DriverBase.
         """
-        print(kwds)
-        super().__init__(pixels, address=port, **kwds)
+        super().__init__(num, **kwds)
+        self.port = port
+        self.pixel_positions = self.server = self.thread = None
+        self.websocks = {}
 
-    def _on_positions(self):
+        if pixel_positions:
+            self.set_pixel_positions(pixel_positions)
+
+        # self.start()
+
+    def start(self):
+        try:
+            self.server = Server(self.port, driver=self, selectInterval=0.001)
+
+        except OSError as e:
+            if e.errno == errno.EADDRINUSE:
+                e.strerror += ADDRESS_IN_USE_ERROR.format(self.port)
+                e.args = (e.errno, e.strerror)
+            raise
+
+    def set_pixel_positions(self, pixel_positions):
         # Flatten list of led positions.
-        if self.server:
-            pl = [c for p in self.pixel_positions for c in p]
-            positions = bytearray(struct.pack('<%sh' % len(pl), *pl))
-            self.server.update(positions=positions)
+        pl = [c for p in pixel_positions for c in p]
+        self.pixel_positions = bytearray(struct.pack('<%sh' % len(pl), *pl))
+
+
+    def add_websock(self, oid, send_pixels):
+        self.websocks[oid] = send_pixels
+
+    def remove_websock(self, oid):
+        try:
+            del self.websocks[oid]
+        except KeyError:
+            pass
+
+    def cleanup(self):
+        self.server.close()
 
     def _update(self, data):
-        if not self.server:
-            raise ValueError(
-                'Tried to send a packet before Layout.start() was called')
-        self.server.update(pixels=data)
+        self._buf = data
+        # print(self._buf)
+        for ws in self.websocks.values():
+            ws(self._buf)
 
 
-open_browser = SimPixel.open_browser
+# This is DEPRECATED.
 DriverSimPixel = SimPixel
