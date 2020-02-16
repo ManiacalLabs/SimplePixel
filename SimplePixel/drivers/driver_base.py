@@ -36,6 +36,9 @@ class DriverBase(object):
     def __exit__(self, type, value, traceback):
         pass
 
+    def _update(self, data):
+        pass  # must be overriden by parent driver
+
     def update(self):
         self._update(self.pixels.buffer)
 

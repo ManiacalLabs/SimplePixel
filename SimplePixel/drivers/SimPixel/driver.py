@@ -70,7 +70,3 @@ class SimPixel(DriverBase):
         self._buf = data
         for ws in self.websocks.values():
             ws(self._buf)
-
-
-# This is DEPRECATED.
-DriverSimPixel = SimPixel

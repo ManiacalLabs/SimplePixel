@@ -1,23 +1,40 @@
 import math
 from . import colors
 from . import font
+from . pixels import Pixels
 
+def rotate_and_flip(coord_map, rotation, flip):
+    rotation = (-rotation % 360) // 90
+    for _ in range(rotation):
+        coord_map = list(zip(*coord_map[::-1]))
 
-def make_matrix_coord_map_positions(coord_map):
-    num = len(coord_map) * max(len(x) for x in coord_map)
-    result = [None] * num
+    if flip:
+        coord_map = coord_map[::-1]
 
-    for y in range(len(coord_map)):
-        for x in range(len(coord_map[y])):
-            result[coord_map[y][x]] = [x, y, 0]
+    return coord_map
+
+def make_matrix_coord_map(dx, dy, serpentine=False, offset=0, rotation=0, y_flip=False):
+    """Helper method to generate X,Y coordinate maps for strips"""
+    result = []
+    for y in range(dy):
+        if not serpentine or y % 2 == 0:
+            result.append([(dx * y) + x + offset for x in range(dx)])
+        else:
+            result.append([dx * (y + 1) - 1 - x + offset for x in range(dx)])
+
+    result = rotate_and_flip(result, rotation, y_flip)
 
     return result
 
 
-class Matrix(object):
-    def __init__(self, pixels, coords):
-        self.pixels = pixels
-        self.map = coords
+class Matrix(Pixels):
+    def __init__(self, driver, width, height, coord_map=None):
+        if not coord_map:
+            coord_map = make_matrix_coord_map(width, height)
+        self.map = coord_map
+
+        super().__init__(driver, width*height)
+
         self.width = len(self.map)
         self.height = None
         for col in self.map:
@@ -30,17 +47,20 @@ class Matrix(object):
 
         self.fonts = font.fonts
 
-        self.set_pixel_positions(
-            make_matrix_coord_map_positions(self.coord_map))
+    def get_pixel_positions(self):
+        result = [None] * self.numLEDs
 
-    def clear(self):
-        self.pixels.clear()
+        for y in range(len(self.map)):
+            for x in range(len(self.map[y])):
+                result[self.map[y][x]] = [x, y, 0]
+
+        return result
 
     def set(self, x, y, color):
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return
         i = self.map[y][x]
-        self.pixels.set(i, color)
+        super().set(i, color)
 
     ##########################################################################
     # Drawing Functions
