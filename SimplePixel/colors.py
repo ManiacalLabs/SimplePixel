@@ -254,6 +254,7 @@ def hue2rgb_360(hue):
     else:
         raise ValueError("hue must be between 0 and 359")
 
+
 hsv2rgb = hsv2rgb_rainbow
 hue2rgb = hue2rgb_rainbow
 
@@ -343,6 +344,7 @@ def wheel_helper(pos, length, cycle_step):
     """Helper for wheel_color that distributes colors over length and allows shifting position"""
     return wheel_color(((pos * WHEEL_MAX // length) + cycle_step) % WHEEL_MAX)
 
+
 def genVector(width, height, x_mult=1, y_mult=1):
     """Generates a map of vector lengths from the center point to each coordinate
     widht - width of matrix to generate
@@ -358,7 +360,7 @@ def genVector(width, height, x_mult=1, y_mult=1):
 
 def diagonal_matrix(d, offset=0):
     hues = hue_gradient(0, 255, d+d-1)
-    return [[hues[(x+y+(d*y))%d + ((d-1) if x >= (d-y)  else 0)] for x in range(d)] for y in range(d)]
+    return [[hues[(x+y+(d*y))%d + ((d-1) if x >= (d-y) else 0)] for x in range(d)] for y in range(d)]
 
 
 Off = (0, 0, 0)

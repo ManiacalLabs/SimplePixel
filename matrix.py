@@ -3,6 +3,7 @@ from SimplePixel.drivers.SimPixel import SimPixel
 from SimplePixel.pixels import Pixels
 from SimplePixel.matrix import Matrix
 from SimplePixel import colors
+from SimplePixel import log
 
 W = 32
 H = 32
