@@ -14,16 +14,16 @@ with SimPixel() as sp:
     hue_map = colors.diagonal_matrix(16)[::-1]
 
     TEST_FUNCS = [
-        # lambda: m.drawCircle(W//2, H//2, W//2-1, colors.Orange),
-        # lambda: m.fillCircle(W//2, H//2, W//2-1, colors.Orange),
-        # lambda: m.drawLine(0, 2, W-1, H-2, colors.Green, aa=False),
-        # lambda: m.drawLine(0, 2, W-1, H-2, colors.Green, aa=True),
-        # lambda: m.drawRect(1, 1, W-2, H-2, colors.Purple),
-        # lambda: m.fillRect(1, 1, W-2, H-2, colors.Purple),
-        # lambda: m.drawRoundRect(4, 4, W-5, H-5, 6, colors.Red),
-        # lambda: m.fillRoundRect(4, 4, W-5, H-5, 6, colors.Red),
-        lambda: m.drawTriangle(4, 4, W//2, H-1, H//2, 0, colors.Blue, aa=True),
-        lambda: m.drawText('TEST', color=colors.Blue, font_scale=2)
+        lambda: m.draw_circle(W//2, H//2, W//2-1, colors.Orange),
+        lambda: m.fill_circle(W//2, H//2, W//2-1, colors.Orange),
+        lambda: m.draw_line(0, 2, W-1, H-2, colors.Green, aa=False),
+        lambda: m.draw_line(0, 2, W-1, H-2, colors.Green, aa=True),
+        lambda: m.draw_rect(1, 1, W-2, H-2, colors.Purple),
+        lambda: m.fill_rect(1, 1, W-2, H-2, colors.Purple),
+        lambda: m.draw_round_rect(4, 4, W-5, H-5, 6, colors.Red),
+        lambda: m.fill_round_rect(4, 4, W-5, H-5, 6, colors.Red),
+        lambda: m.draw_triangle(4, 4, W//2, H-1, H//2, 0, colors.Blue, aa=True),
+        lambda: m.draw_text('TEST', color=colors.Blue, font_scale=2)
     ]
 
     try:
