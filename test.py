@@ -11,44 +11,33 @@ def make_strip_coord_map_positions(num):
 
 NUM = 16
 
-with SimPixel(NUM) as sp:
+with SimPixel() as sp:
     pixels = Pixels(sp, NUM)
     sp.setMasterBrightness(255)
 
-
-    hue_map = colors.diagonal_matrix(16)[::-1]
-
     try:
         while True:
-            # for step in range(256):
-            #     for x in range(16):
-            #         for y in range(16):
-            #             c = colors.hue2rgb((hue_map[y][x] + step) % 255)
-            #             matrix.set(x, y, c)
-            #     sp.update()
-            #     sleep(0.01)
-
             pixels.clear()
             for i in range(16):
-                pixels.set(i, colors.Red)
+                pixels[i] = colors.Red
             sp.update()
             sleep(1)
 
             pixels.clear()
             for i in range(16):
-                pixels.set(i, colors.Green)
+                pixels[i] = colors.Green
             sp.update()
             sleep(1)
 
             pixels.clear()
             for i in range(16):
-                pixels.set(i, colors.Blue)
+                pixels[i] = colors.Blue
             sp.update()
             sleep(1)
 
             pixels.clear()
             for i in range(16):
-                pixels.set(i, colors.White)
+                pixels[i] = colors.White
             sp.update()
             sleep(1)
 

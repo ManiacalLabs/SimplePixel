@@ -36,12 +36,12 @@ import colorsys
 import math
 
 
-def color_scale(color, level):
+def scale(color, level):
     """Scale RGB tuple by level, 0 - 255"""
     return tuple([(i * level) >> 8 for i in list(color)])
 
 
-def color_blend(a, b):
+def blend(a, b):
     """Performs a Screen blend on RGB color tuples, a and b"""
     return (255 - (((255 - a[0]) * (255 - b[0])) >> 8), 255 - (((255 - a[1]) * (255 - b[1])) >> 8), 255 - (((255 - a[2]) * (255 - b[2])) >> 8))
 
@@ -359,6 +359,7 @@ def genVector(width, height, x_mult=1, y_mult=1):
 def diagonal_matrix(d, offset=0):
     hues = hue_gradient(0, 255, d+d-1)
     return [[hues[(x+y+(d*y))%d + ((d-1) if x >= (d-y)  else 0)] for x in range(d)] for y in range(d)]
+
 
 Off = (0, 0, 0)
 Blue = (0, 0, 255)

@@ -13,7 +13,7 @@ class ChannelOrder:
 class DriverBase(object):
     """Base driver class to build other drivers from"""
 
-    def __init__(self, pixels, c_order=ChannelOrder.RGB, gamma=None):
+    def __init__(self, c_order=ChannelOrder.RGB, gamma=None):
         self.gamma = gamma or range(256)
         self.c_order = c_order
 
