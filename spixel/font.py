@@ -671,6 +671,7 @@ fonts = {
         'sep': 2
     }
 }
+"""Font definition for available font objects"""
 
 default_font = '6x4'
 

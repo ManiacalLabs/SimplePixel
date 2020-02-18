@@ -1,0 +1,37 @@
+name: Build and Push Docs
+
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false
+    - uses: actions/setup-python@v1
+      with:
+        python-version: '3.7.x'
+    - name: Install Environment
+      run: |
+        pip install wheel
+        pip install -r doc_requirements.txt
+      env:
+        CI: true
+    - name: Build Docs
+      run: |
+        ./scripts/gendoc.sh
+      env:
+        CI: true
+    - name: Deploy
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      if: github.ref == 'refs/heads/master'
+      with:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        BRANCH: gh-pages
+        FOLDER: html/spixel/
+        CLEAN: true
