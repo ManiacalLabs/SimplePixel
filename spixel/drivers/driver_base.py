@@ -24,7 +24,7 @@ class DriverBase(object):
         self.c_order = c_order
 
         self.pixels = None
-        """Reference to instance of `SimplePixel.pixels.Pixels`"""
+        """Reference to instance of `spixel.pixels.Pixels`"""
         self.num = None
         """Number of total pixels available"""
         self.buf_byte_count = None
@@ -32,10 +32,10 @@ class DriverBase(object):
         self._buf = None
 
     def setup(self, pixels):
-        """Called automatically by `SimplePixel.pixels.Pixels` instance.
+        """Called automatically by `spixel.pixels.Pixels` instance.
 
-        `pixels`: Instance of `SimplePixel.pixels.Pixels`
-        or derived, such as `SimplePixel.matrix.Matrix`.
+        `pixels`: Instance of `spixel.pixels.Pixels`
+        or derived, such as `spixel.matrix.Matrix`.
         """
         self.pixels = pixels
         self.num = self.pixels.num
@@ -56,7 +56,7 @@ class DriverBase(object):
         """Call to push data to interface.
         Will call derived class `_update` function with current buffer.
 
-        In most cases you should call `SimplePixel.pixels.Pixels.update()` instead of calling this directly.
+        In most cases you should call `spixel.pixels.Pixels.update()` instead of calling this directly.
         """
         self._update(self.pixels.buffer)
 
@@ -68,7 +68,7 @@ class DriverBase(object):
         """
         **Internal Use Only**:
         Placeholder callback for sending physical pixel layout data to the
-        `SimplePixel.drivers.SimPixel` driver.
+        `spixel.drivers.SimPixel` driver.
         """
         pass
 

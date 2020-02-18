@@ -1,7 +1,7 @@
 from time import sleep
-from SimplePixel.drivers.SimPixel import SimPixel
-from SimplePixel import Pixels
-from SimplePixel import colors
+from spixel.drivers.SimPixel import SimPixel
+from spixel import Pixels
+from spixel import colors
 
 
 def make_strip_coord_map_positions(num):

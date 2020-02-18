@@ -4,7 +4,7 @@ class Pixels(object):
     This data intentionally has no channel order or color correction.
     Those must be applied by the driver.
 
-    `driver`: Instance of class derived from `SimplePixel.drivers.driver_base.DriverBase`
+    `driver`: Instance of class derived from `spixel.drivers.driver_base.DriverBase`
 
     `num (int)`: Number of pixels to be held by buffer.
     """
@@ -27,7 +27,7 @@ class Pixels(object):
         self.driver.update()
 
     def _get_pixel_positions(self):
-        """**Internal Use**: Returns pixel_positions object for `SimplePixel.drivers.SimPixel.driver.SimPixel`"""
+        """**Internal Use**: Returns pixel_positions object for `spixel.drivers.SimPixel.driver.SimPixel`"""
         return [[x, 0, 0] for x in range(self.num)]
 
     def clear(self):
@@ -39,7 +39,7 @@ class Pixels(object):
 
         `pixel (int)`: Index of pixel to set
 
-        `color (tuple)`: `(R,G,B)` color tuple or named value from `SimplePixel.colors`
+        `color (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors`
         """
         self.buffer[pixel * 3:(pixel * 3) + 3] = color
 

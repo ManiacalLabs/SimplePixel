@@ -8,7 +8,7 @@ class InfoFilter(logging.Filter):
         return rec.levelno in (logging.DEBUG, logging.INFO)
 
 
-def _new_custom_logger(name='SimplePixel',
+def _new_custom_logger(name='spixel',
                        fmt='%(levelname)s - %(module)s - %(message)s'):
     logger = logging.getLogger(name)
     formatter = logging.Formatter(fmt=fmt)

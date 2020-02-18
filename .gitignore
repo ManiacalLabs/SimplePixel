@@ -6,7 +6,7 @@ __pycache__
 build
 dist
 MANIFEST
-SimplePixel.egg*
+spixel.egg*
 
 # Dotfiles
 .DS_STORE

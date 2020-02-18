@@ -43,12 +43,12 @@ def make_matrix_coord_map(width, height, serpentine=False, offset=0, rotation=0,
 
 
 class Matrix(Pixels):
-    """2D Matrix abstraction wrapper around `SimplePixel.pixels.Pixels`
+    """2D Matrix abstraction wrapper around `spixel.pixels.Pixels`
     to provide `(X,Y)` coordinate mapping. Internally the data is stored as
-    a 1D `SimplePixel.pixels.Pixels` object and `(X,Y)` coordinates are mapped
+    a 1D `spixel.pixels.Pixels` object and `(X,Y)` coordinates are mapped
     to list indicies.
 
-    `driver`: Instance of class derived from `SimplePixel.drivers.driver_base.DriverBase`
+    `driver`: Instance of class derived from `spixel.drivers.driver_base.DriverBase`
 
     `width (int)`: X axis dimension of matrix
 
@@ -78,7 +78,7 @@ class Matrix(Pixels):
                     raise ValueError('All columns of coords must be the same length!')
 
     def _get_pixel_positions(self):
-        """**Internal Use**: Returns pixel_positions object for `SimplePixel.drivers.SimPixel.driver.SimPixel`"""
+        """**Internal Use**: Returns pixel_positions object for `spixel.drivers.SimPixel.driver.SimPixel`"""
         result = [None] * self.num
 
         for y in range(len(self.map)):
@@ -94,7 +94,7 @@ class Matrix(Pixels):
 
         `y (int)`: Y coordinate of pixel to set
 
-        `color (tuple)`: `(R,G,B)` color tuple or named value from `SimplePixel.colors`
+        `color (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors`
         """
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return
@@ -390,11 +390,11 @@ class Matrix(Pixels):
     def draw_char(self, x, y, c, color, bg, aa=False, font_name=font.default_font, font_scale=1):
         """Draw a text character `c` with top-left corner placed at `(x,y)` in specified `color`
 
-        `bg (tuple)`: `(R,G,B)` color tuple or named value from `SimplePixel.colors` to use as background
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
 
         `aa (bool)`: If `True` draw anti-aliased
 
-        `font_name`: Name of font from `SimplePixel.font.fonts`
+        `font_name`: Name of font from `spixel.font.fonts`
 
         `font_scale (int)`: Scale factor to multiple font size by
         """
@@ -439,11 +439,11 @@ class Matrix(Pixels):
                   font_name=font.default_font, font_scale=1):
         """Draw a text string `text` with top-left corner placed at `(x,y)` in specified `color`
 
-        `bg (tuple)`: `(R,G,B)` color tuple or named value from `SimplePixel.colors` to use as background
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
 
         `aa (bool)`: If `True` draw anti-aliased
 
-        `font_name`: Name of font from `SimplePixel.font.fonts`
+        `font_name`: Name of font from `spixel.font.fonts`
 
         `font_scale (int)`: Scale factor to multiple font size by
         """

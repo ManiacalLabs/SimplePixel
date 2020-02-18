@@ -17,7 +17,7 @@ def read(fname):
 
 def _get_version():
     from os.path import abspath, dirname, join
-    filename = join(dirname(abspath(__file__)), 'SimplePixel', 'VERSION')
+    filename = join(dirname(abspath(__file__)), 'spixel', 'VERSION')
     return open(filename).read().strip()
 
 with open('requirements.txt') as f:
@@ -25,14 +25,14 @@ with open('requirements.txt') as f:
 
 
 setup(
-    name = "SimplePixel",
+    name = "spixel",
     version = _get_version(),
     author = "Adam Haile",
     author_email = "adam@maniacallabs.com",
     description = "A simple python LED control framework, in the spirit of FastLED",
     license = "MIT",
     keywords = "led pixels blinky",
-    url = "https://github.com/ManiacalLabs/SimplePixel",
+    url = "https://github.com/ManiacalLabs/spixel",
     packages=find_packages(),
     long_description=read('README.md'),
     classifiers=[

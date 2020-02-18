@@ -1,8 +1,8 @@
 from time import sleep
-from SimplePixel.drivers.SimPixel import SimPixel
-from SimplePixel import Matrix
-from SimplePixel import colors
-from SimplePixel import log
+from spixel.drivers.SimPixel import SimPixel
+from spixel import Matrix
+from spixel import colors
+from spixel import log
 
 W = 32
 H = 32
