@@ -1,0 +1,1411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.7.4" />
+<title>spixel.matrix API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{font-weight:bold}#index h4 + ul{margin-bottom:.6em}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>spixel.matrix</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import math
+from . import colors
+from . import font
+from . pixels import Pixels
+
+
+def rotate_and_flip(coord_map, rotation, flip):
+    rotation = (-rotation % 360) // 90
+    for _ in range(rotation):
+        coord_map = list(zip(*coord_map[::-1]))
+
+    if flip:
+        coord_map = coord_map[::-1]
+
+    return coord_map
+
+
+def make_matrix_coord_map(width, height, serpentine=False, offset=0, rotation=0, y_flip=False):
+    &#34;&#34;&#34;Helper method to generate X,Y coordinate maps for mapped to 1D pixel lists
+
+    `width (int)`: X axis dimension of matrix
+
+    `height (int)`: Y axis dimension of matrix
+
+    `serpentine (bool)`: Generates map in serpentine pattern instead of always restarting on left
+
+    `offset (int)`: Starting index (for when generating multiple sub-maps)
+
+    `rotation (0, 90, 180, 270)`: Degrees to rotate matrix map by
+
+    `y_flip (bool)`: Flip matrix along Y axis
+    &#34;&#34;&#34;
+    result = []
+    for y in range(height):
+        if not serpentine or y % 2 == 0:
+            result.append([(width * y) + x + offset for x in range(width)])
+        else:
+            result.append([width * (y + 1) - 1 - x + offset for x in range(width)])
+
+    result = rotate_and_flip(result, rotation, y_flip)
+
+    return result
+
+
+class Matrix(Pixels):
+    &#34;&#34;&#34;2D Matrix abstraction wrapper around `spixel.pixels.Pixels`
+    to provide `(X,Y)` coordinate mapping. Internally the data is stored as
+    a 1D `spixel.pixels.Pixels` object and `(X,Y)` coordinates are mapped
+    to list indicies.
+
+    `driver`: Instance of class derived from `spixel.drivers.driver_base.DriverBase`
+
+    `width (int)`: X axis dimension of matrix
+
+    `height (int)`: Y axis dimension of matrix
+
+    `coord_map`: 2D matrix mapping `(X,Y)` coordinates to 1D indicies. Will be auto-generated with best-guess if omitted.
+    &#34;&#34;&#34;
+    def __init__(self, driver, width, height, coord_map=None):
+        if not coord_map:
+            coord_map = make_matrix_coord_map(width, height)
+        self.map = coord_map
+        &#34;&#34;&#34;Current coordinate map object&#34;&#34;&#34;
+
+        super().__init__(driver, width * height)
+
+        self.width = len(self.map)
+        &#34;&#34;&#34;X axis dimension of matrix, for querying in animation code&#34;&#34;&#34;
+        self.height = None
+        &#34;&#34;&#34;X axis dimension of matrix, for querying in animation code&#34;&#34;&#34;
+
+        for col in self.map:
+            y = len(col)
+            if self.height is None:
+                self.height = y
+            else:
+                if y != self.height:
+                    raise ValueError(&#39;All columns of coords must be the same length!&#39;)
+
+    def _get_pixel_positions(self):
+        &#34;&#34;&#34;**Internal Use**: Returns pixel_positions object for `spixel.drivers.SimPixel.driver.SimPixel`&#34;&#34;&#34;
+        result = [None] * self.num
+
+        for y in range(len(self.map)):
+            for x in range(len(self.map[y])):
+                result[self.map[y][x]] = [x, y, 0]
+
+        return result
+
+    def set(self, x, y, color):
+        &#34;&#34;&#34;Set pixel at given `(X,Y)` coordinates to color. Can also use the format `matrix[x, y] = colors.Red` instead of calling function.
+
+        `x (int)`: X coordinate of pixel to set
+
+        `y (int)`: Y coordinate of pixel to set
+
+        `color (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors`
+        &#34;&#34;&#34;
+        if x &lt; 0 or x &gt;= self.width or y &lt; 0 or y &gt;= self.height:
+            return
+        i = self.map[y][x]
+        super().set(i, color)
+
+    def get(self, x, y):
+        &#34;&#34;&#34;Get pixel color tuple at given `(X,Y)` coordinate. Can also use the format `c = matrix[x, y]` instead of calling function.
+
+        `x (int)`: X coordinate of pixel to get
+
+        `y (int)`: Y coordinate of pixel to get
+
+        **returns:** `(R,G,B)` color tuple
+        &#34;&#34;&#34;
+        i = self.map[y][x]
+        return self.get(i)
+
+    def __setitem__(self, pixel, color):
+        x, y = pixel
+        self.set(x, y, color)
+
+    def __getitem__(self, pixel):
+        x, y = pixel
+        return self.get(x, y)
+
+    ##########################################################################
+    # Drawing Functions
+    # Lovingly borrowed from Adafruit
+    # https://github.com/adafruit/Adafruit-GFX-Library/blob/master/Adafruit_GFX.cpp
+    ##########################################################################
+
+    def draw_circle(self, x0, y0, r, color=None):
+        &#34;&#34;&#34;
+        Draws a circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple
+        &#34;&#34;&#34;
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
+
+        self.set(x0, y0 + r, color)
+        self.set(x0, y0 - r, color)
+        self.set(x0 + r, y0, color)
+        self.set(x0 - r, y0, color)
+
+        while x &lt; y:
+            if f &gt;= 0:
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+
+            self.set(x0 + x, y0 + y, color)
+            self.set(x0 - x, y0 + y, color)
+            self.set(x0 + x, y0 - y, color)
+            self.set(x0 - x, y0 - y, color)
+            self.set(x0 + y, y0 + x, color)
+            self.set(x0 - y, y0 + x, color)
+            self.set(x0 + y, y0 - x, color)
+            self.set(x0 - y, y0 - x, color)
+
+    def _draw_circle_helper(self, x0, y0, r, cornername, color=None):
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
+
+        while x &lt; y:
+            if (f &gt;= 0):
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+            if (cornername &amp; 0x4):
+                self.set(x0 + x, y0 + y, color)
+                self.set(x0 + y, y0 + x, color)
+
+            if (cornername &amp; 0x2):
+                self.set(x0 + x, y0 - y, color)
+                self.set(x0 + y, y0 - x, color)
+
+            if (cornername &amp; 0x8):
+                self.set(x0 - y, y0 + x, color)
+                self.set(x0 - x, y0 + y, color)
+
+            if (cornername &amp; 0x1):
+                self.set(x0 - y, y0 - x, color)
+                self.set(x0 - x, y0 - y, color)
+
+    def _draw_circle_filled_helper(self, x0, y0, r, cornername, delta, color=None):
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
+
+        while (x &lt; y):
+            if (f &gt;= 0):
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+
+            if (cornername &amp; 0x1):
+                self._draw_fast_vline(x0 + x, y0 - y, 2 * y + 1 + delta, color)
+                self._draw_fast_vline(x0 + y, y0 - x, 2 * x + 1 + delta, color)
+
+            if (cornername &amp; 0x2):
+                self._draw_fast_vline(x0 - x, y0 - y, 2 * y + 1 + delta, color)
+                self._draw_fast_vline(x0 - y, y0 - x, 2 * x + 1 + delta, color)
+
+    def draw_circle_filled(self, x0, y0, r, color=None):
+        &#34;&#34;&#34;Draws a filled circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple&#34;&#34;&#34;
+        self._draw_fast_vline(x0, y0 - r, 2 * r + 1, color)
+        self._draw_circle_filled_helper(x0, y0, r, 3, 0, color)
+
+    def draw_line(self, x0, y0, x1, y1, color=None, colorFunc=None, aa=False):
+        &#34;&#34;&#34;Draw a line from `(x0,y0)` to `(x1,y1)` with specified `color` tuple.
+
+        `aa (bool)`: If `True` draw anti-aliased line
+        &#34;&#34;&#34;
+        if aa:
+            self._draw_wu_line(x0, y0, x1, y1, color, colorFunc)
+        else:
+            self._draw_bresenham_line(x0, y0, x1, y1, color, colorFunc)
+
+    def _draw_bresenham_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
+        steep = abs(y1 - y0) &gt; abs(x1 - x0)
+        if steep:
+            x0, y0 = y0, x0
+            x1, y1 = y1, x1
+
+        if x0 &gt; x1:
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+
+        dx = x1 - x0
+        dy = abs(y1 - y0)
+
+        err = dx / 2
+
+        if y0 &lt; y1:
+            ystep = 1
+        else:
+            ystep = -1
+
+        count = 0
+        for x in range(x0, x1 + 1):
+            if colorFunc:
+                color = colorFunc(count)
+                count += 1
+
+            if steep:
+                self.set(y0, x, color)
+            else:
+                self.set(x, y0, color)
+
+            err -= dy
+            if err &lt; 0:
+                y0 += ystep
+                err += dx
+
+    def _draw_wu_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
+        funcCount = [0]  # python2 hack since nonlocal not available
+
+        def plot(x, y, level):
+            c = color
+            if colorFunc:
+                c = colorFunc(funcCount[0])
+                funcCount[0] += 1
+
+            c = colors.scale(color, int(255 * level))
+            self.set(int(x), int(y), c)
+
+        def ipart(x):
+            return int(x)
+
+        def fpart(x):
+            return x - math.floor(x)
+
+        def rfpart(x):
+            return 1.0 - fpart(x)
+
+        steep = abs(y1 - y0) &gt; abs(x1 - x0)
+        if steep:
+            x0, y0 = y0, x0
+            x1, y1 = y1, x1
+
+        if x0 &gt; x1:
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+
+        dx = x1 - x0
+        dy = y1 - y0
+        gradient = dy / dx
+
+        # handle first endpoint
+        xend = round(x0)
+        yend = y0 + gradient * (xend - x0)
+        xgap = rfpart(x0 + 0.5)
+        xpxl1 = xend  # this will be used in the main loop
+        ypxl1 = ipart(yend)
+
+        if steep:
+            plot(ypxl1, xpxl1, rfpart(yend) * xgap)
+            plot(ypxl1 + 1, xpxl1, fpart(yend) * xgap)
+        else:
+            plot(xpxl1, ypxl1, rfpart(yend) * xgap)
+            plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap)
+
+        # first y-intersection for the main loop
+        intery = yend + gradient
+
+        # handle second endpoint
+        xend = round(x1)
+        yend = y1 + gradient * (xend - x1)
+        xgap = fpart(x1 + 0.5)
+        xpxl2 = xend  # this will be used in the main loop
+        ypxl2 = ipart(yend)
+
+        if steep:
+            plot(ypxl2, xpxl2, rfpart(yend) * xgap)
+            plot(ypxl2 + 1, xpxl2, fpart(yend) * xgap)
+        else:
+            plot(xpxl2, ypxl2, rfpart(yend) * xgap)
+            plot(xpxl2, ypxl2 + 1, fpart(yend) * xgap)
+
+        # main loop
+        for x in range(int(xpxl1 + 1), int(xpxl2)):
+            if steep:
+                plot(ipart(intery), x, rfpart(intery))
+                plot(ipart(intery) + 1, x, fpart(intery))
+            else:
+                plot(x, ipart(intery), rfpart(intery))
+                plot(x, ipart(intery) + 1, fpart(intery))
+            intery = intery + gradient
+
+    def _draw_fast_vline(self, x, y, h, color=None, aa=False):
+        self.draw_line(x, y, x, y + h - 1, color, aa)
+
+    def _draw_fast_hline(self, x, y, w, color=None, aa=False):
+        self.draw_line(x, y, x + w - 1, y, color, aa)
+
+    def draw_rect(self, x, y, w, h, color=None):
+        &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple&#34;&#34;&#34;
+        self._draw_fast_hline(x, y, w, color)
+        self._draw_fast_hline(x, y + h - 1, w, color)
+        self._draw_fast_vline(x, y, h, color)
+        self._draw_fast_vline(x + w - 1, y, h, color)
+
+    def draw_rect_filled(self, x, y, w, h, color=None, aa=False):
+        &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple&#34;&#34;&#34;
+        for i in range(x, x + w):
+            self._draw_fast_vline(i, y, h, color, aa)
+
+    def draw_round_rect(self, x, y, w, h, r, color=None, aa=False):
+        &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
+        self._draw_fast_hline(x + r, y, w - 2 * r, color, aa)  # Top
+        self._draw_fast_hline(x + r, y + h - 1, w - 2 * r, color, aa)  # Bottom
+        self._draw_fast_vline(x, y + r, h - 2 * r, color, aa)  # Left
+        self._draw_fast_vline(x + w - 1, y + r, h - 2 * r, color, aa)  # Right
+        # draw four corners
+        self._draw_circle_helper(x + r, y + r, r, 1, color)
+        self._draw_circle_helper(x + w - r - 1, y + r, r, 2, color)
+        self._draw_circle_helper(x + w - r - 1, y + h - r - 1, r, 4, color)
+        self._draw_circle_helper(x + r, y + h - r - 1, r, 8, color)
+
+    def draw_round_rect_filled(self, x, y, w, h, r, color=None, aa=False):
+        &#34;&#34;&#34;Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
+        self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
+        self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
+                                 1, h - 2 * r - 1, color)
+        self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)
+
+    def draw_triangle(self, x0, y0, x1, y1, x2, y2, color=None, aa=False):
+        &#34;&#34;&#34;Draw triangle with points `(x0,y0)`, `(x1,y1)`, and `(x2,y2)` and specified `color` tuple.
+
+        `aa (bool)`: If `True` draw anti-aliased lines
+        &#34;&#34;&#34;
+        self.draw_line(x0, y0, x1, y1, color, None, aa)
+        self.draw_line(x1, y1, x2, y2, color, None, aa)
+        self.draw_line(x2, y2, x0, y0, color, None, aa)
+
+    def draw_char(self, x, y, c, color, bg, aa=False, font_name=font.default_font, font_scale=1):
+        &#34;&#34;&#34;Draw a text character `c` with top-left corner placed at `(x,y)` in specified `color`
+
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
+
+        `aa (bool)`: If `True` draw anti-aliased
+
+        `font_name`: Name of font from `spixel.font.fonts`
+
+        `font_scale (int)`: Scale factor to multiple font size by
+        &#34;&#34;&#34;
+        assert font_scale &gt;= 1, &#34;font_scale must be &gt;= 1&#34;
+        f = font.fonts[font_name]
+        fh = f[&#39;height&#39;]
+        FONT = f[&#39;data&#39;]
+
+        c = ord(c)  # make it the int value
+        if c &lt; f[&#39;bounds&#39;][0] or c &gt; f[&#39;bounds&#39;][1]:
+            c_data = f[&#39;undef&#39;]
+        else:
+            c_data = FONT[c - f[&#39;bounds&#39;][0]]
+
+        fw = len(c_data)
+        for i in range(fw + f[&#39;sep&#39;]):
+            xPos = x + (i * font_scale)
+            if ((xPos &lt; self.width) and (xPos + fw * font_scale - 1) &gt;= 0):
+                if i &gt;= fw:
+                    line = 0
+                else:
+                    line = FONT[c][i]
+                for j in range(fh):
+                    yPos = y + (j * font_scale)
+                    if ((yPos &lt; self.height) and
+                            (yPos + fh * font_scale - 1) &gt;= 0):
+                        if line &amp; 0x1:
+                            if font_scale == 1:
+                                self.set(xPos, yPos, color)
+                            else:
+                                self.draw_rect_filled(xPos, yPos, font_scale, font_scale, color, aa)
+                        elif bg != color and bg is not None:
+                            if font_scale == 1:
+                                self.set(xPos, yPos, bg)
+                            else:
+                                self.draw_rect_filled(xPos, yPos, font_scale, font_scale, bg, aa)
+                    line &gt;&gt;= 1
+        return fw + f[&#39;sep&#39;]
+
+    def draw_text(self, text, x=0, y=0,
+                  color=None, bg=colors.Off, aa=False,
+                  font_name=font.default_font, font_scale=1):
+        &#34;&#34;&#34;Draw a text string `text` with top-left corner placed at `(x,y)` in specified `color`
+
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
+
+        `aa (bool)`: If `True` draw anti-aliased
+
+        `font_name`: Name of font from `spixel.font.fonts`
+
+        `font_scale (int)`: Scale factor to multiple font size by
+        &#34;&#34;&#34;
+        fh = font.fonts[font_name][&#39;height&#39;]
+        for c in text:
+            if c == &#39;\n&#39;:
+                y += font_scale * fh
+                x = 0
+            elif c == &#39;\r&#39;:
+                pass  # skip it
+            else:
+                fw = self.draw_char(x, y, c, color, bg, aa, font_name, font_scale)
+                x += font_scale * fw
+                if x &gt;= self.width:
+                    break</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="spixel.matrix.make_matrix_coord_map"><code class="name flex">
+<span>def <span class="ident">make_matrix_coord_map</span></span>(<span>width, height, serpentine=False, offset=0, rotation=0, y_flip=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Helper method to generate X,Y coordinate maps for mapped to 1D pixel lists</p>
+<p><code>width (int)</code>: X axis dimension of matrix</p>
+<p><code>height (int)</code>: Y axis dimension of matrix</p>
+<p><code>serpentine (bool)</code>: Generates map in serpentine pattern instead of always restarting on left</p>
+<p><code>offset (int)</code>: Starting index (for when generating multiple sub-maps)</p>
+<p><code>rotation (0, 90, 180, 270)</code>: Degrees to rotate matrix map by</p>
+<p><code>y_flip (bool)</code>: Flip matrix along Y axis</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_matrix_coord_map(width, height, serpentine=False, offset=0, rotation=0, y_flip=False):
+    &#34;&#34;&#34;Helper method to generate X,Y coordinate maps for mapped to 1D pixel lists
+
+    `width (int)`: X axis dimension of matrix
+
+    `height (int)`: Y axis dimension of matrix
+
+    `serpentine (bool)`: Generates map in serpentine pattern instead of always restarting on left
+
+    `offset (int)`: Starting index (for when generating multiple sub-maps)
+
+    `rotation (0, 90, 180, 270)`: Degrees to rotate matrix map by
+
+    `y_flip (bool)`: Flip matrix along Y axis
+    &#34;&#34;&#34;
+    result = []
+    for y in range(height):
+        if not serpentine or y % 2 == 0:
+            result.append([(width * y) + x + offset for x in range(width)])
+        else:
+            result.append([width * (y + 1) - 1 - x + offset for x in range(width)])
+
+    result = rotate_and_flip(result, rotation, y_flip)
+
+    return result</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.rotate_and_flip"><code class="name flex">
+<span>def <span class="ident">rotate_and_flip</span></span>(<span>coord_map, rotation, flip)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rotate_and_flip(coord_map, rotation, flip):
+    rotation = (-rotation % 360) // 90
+    for _ in range(rotation):
+        coord_map = list(zip(*coord_map[::-1]))
+
+    if flip:
+        coord_map = coord_map[::-1]
+
+    return coord_map</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="spixel.matrix.Matrix"><code class="flex name class">
+<span>class <span class="ident">Matrix</span></span>
+<span>(</span><span>driver, width, height, coord_map=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>2D Matrix abstraction wrapper around <a title="spixel.pixels.Pixels" href="pixels.html#spixel.pixels.Pixels"><code>Pixels</code></a>
+to provide <code>(X,Y)</code> coordinate mapping. Internally the data is stored as
+a 1D <a title="spixel.pixels.Pixels" href="pixels.html#spixel.pixels.Pixels"><code>Pixels</code></a> object and <code>(X,Y)</code> coordinates are mapped
+to list indicies.</p>
+<p><code>driver</code>: Instance of class derived from <a title="spixel.drivers.driver_base.DriverBase" href="drivers/driver_base.html#spixel.drivers.driver_base.DriverBase"><code>DriverBase</code></a></p>
+<p><code>width (int)</code>: X axis dimension of matrix</p>
+<p><code>height (int)</code>: Y axis dimension of matrix</p>
+<p><code>coord_map</code>: 2D matrix mapping <code>(X,Y)</code> coordinates to 1D indicies. Will be auto-generated with best-guess if omitted.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Matrix(Pixels):
+    &#34;&#34;&#34;2D Matrix abstraction wrapper around `spixel.pixels.Pixels`
+    to provide `(X,Y)` coordinate mapping. Internally the data is stored as
+    a 1D `spixel.pixels.Pixels` object and `(X,Y)` coordinates are mapped
+    to list indicies.
+
+    `driver`: Instance of class derived from `spixel.drivers.driver_base.DriverBase`
+
+    `width (int)`: X axis dimension of matrix
+
+    `height (int)`: Y axis dimension of matrix
+
+    `coord_map`: 2D matrix mapping `(X,Y)` coordinates to 1D indicies. Will be auto-generated with best-guess if omitted.
+    &#34;&#34;&#34;
+    def __init__(self, driver, width, height, coord_map=None):
+        if not coord_map:
+            coord_map = make_matrix_coord_map(width, height)
+        self.map = coord_map
+        &#34;&#34;&#34;Current coordinate map object&#34;&#34;&#34;
+
+        super().__init__(driver, width * height)
+
+        self.width = len(self.map)
+        &#34;&#34;&#34;X axis dimension of matrix, for querying in animation code&#34;&#34;&#34;
+        self.height = None
+        &#34;&#34;&#34;X axis dimension of matrix, for querying in animation code&#34;&#34;&#34;
+
+        for col in self.map:
+            y = len(col)
+            if self.height is None:
+                self.height = y
+            else:
+                if y != self.height:
+                    raise ValueError(&#39;All columns of coords must be the same length!&#39;)
+
+    def _get_pixel_positions(self):
+        &#34;&#34;&#34;**Internal Use**: Returns pixel_positions object for `spixel.drivers.SimPixel.driver.SimPixel`&#34;&#34;&#34;
+        result = [None] * self.num
+
+        for y in range(len(self.map)):
+            for x in range(len(self.map[y])):
+                result[self.map[y][x]] = [x, y, 0]
+
+        return result
+
+    def set(self, x, y, color):
+        &#34;&#34;&#34;Set pixel at given `(X,Y)` coordinates to color. Can also use the format `matrix[x, y] = colors.Red` instead of calling function.
+
+        `x (int)`: X coordinate of pixel to set
+
+        `y (int)`: Y coordinate of pixel to set
+
+        `color (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors`
+        &#34;&#34;&#34;
+        if x &lt; 0 or x &gt;= self.width or y &lt; 0 or y &gt;= self.height:
+            return
+        i = self.map[y][x]
+        super().set(i, color)
+
+    def get(self, x, y):
+        &#34;&#34;&#34;Get pixel color tuple at given `(X,Y)` coordinate. Can also use the format `c = matrix[x, y]` instead of calling function.
+
+        `x (int)`: X coordinate of pixel to get
+
+        `y (int)`: Y coordinate of pixel to get
+
+        **returns:** `(R,G,B)` color tuple
+        &#34;&#34;&#34;
+        i = self.map[y][x]
+        return self.get(i)
+
+    def __setitem__(self, pixel, color):
+        x, y = pixel
+        self.set(x, y, color)
+
+    def __getitem__(self, pixel):
+        x, y = pixel
+        return self.get(x, y)
+
+    ##########################################################################
+    # Drawing Functions
+    # Lovingly borrowed from Adafruit
+    # https://github.com/adafruit/Adafruit-GFX-Library/blob/master/Adafruit_GFX.cpp
+    ##########################################################################
+
+    def draw_circle(self, x0, y0, r, color=None):
+        &#34;&#34;&#34;
+        Draws a circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple
+        &#34;&#34;&#34;
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
+
+        self.set(x0, y0 + r, color)
+        self.set(x0, y0 - r, color)
+        self.set(x0 + r, y0, color)
+        self.set(x0 - r, y0, color)
+
+        while x &lt; y:
+            if f &gt;= 0:
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+
+            self.set(x0 + x, y0 + y, color)
+            self.set(x0 - x, y0 + y, color)
+            self.set(x0 + x, y0 - y, color)
+            self.set(x0 - x, y0 - y, color)
+            self.set(x0 + y, y0 + x, color)
+            self.set(x0 - y, y0 + x, color)
+            self.set(x0 + y, y0 - x, color)
+            self.set(x0 - y, y0 - x, color)
+
+    def _draw_circle_helper(self, x0, y0, r, cornername, color=None):
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
+
+        while x &lt; y:
+            if (f &gt;= 0):
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+            if (cornername &amp; 0x4):
+                self.set(x0 + x, y0 + y, color)
+                self.set(x0 + y, y0 + x, color)
+
+            if (cornername &amp; 0x2):
+                self.set(x0 + x, y0 - y, color)
+                self.set(x0 + y, y0 - x, color)
+
+            if (cornername &amp; 0x8):
+                self.set(x0 - y, y0 + x, color)
+                self.set(x0 - x, y0 + y, color)
+
+            if (cornername &amp; 0x1):
+                self.set(x0 - y, y0 - x, color)
+                self.set(x0 - x, y0 - y, color)
+
+    def _draw_circle_filled_helper(self, x0, y0, r, cornername, delta, color=None):
+        f = 1 - r
+        ddF_x = 1
+        ddF_y = -2 * r
+        x = 0
+        y = r
+
+        while (x &lt; y):
+            if (f &gt;= 0):
+                y -= 1
+                ddF_y += 2
+                f += ddF_y
+            x += 1
+            ddF_x += 2
+            f += ddF_x
+
+            if (cornername &amp; 0x1):
+                self._draw_fast_vline(x0 + x, y0 - y, 2 * y + 1 + delta, color)
+                self._draw_fast_vline(x0 + y, y0 - x, 2 * x + 1 + delta, color)
+
+            if (cornername &amp; 0x2):
+                self._draw_fast_vline(x0 - x, y0 - y, 2 * y + 1 + delta, color)
+                self._draw_fast_vline(x0 - y, y0 - x, 2 * x + 1 + delta, color)
+
+    def draw_circle_filled(self, x0, y0, r, color=None):
+        &#34;&#34;&#34;Draws a filled circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple&#34;&#34;&#34;
+        self._draw_fast_vline(x0, y0 - r, 2 * r + 1, color)
+        self._draw_circle_filled_helper(x0, y0, r, 3, 0, color)
+
+    def draw_line(self, x0, y0, x1, y1, color=None, colorFunc=None, aa=False):
+        &#34;&#34;&#34;Draw a line from `(x0,y0)` to `(x1,y1)` with specified `color` tuple.
+
+        `aa (bool)`: If `True` draw anti-aliased line
+        &#34;&#34;&#34;
+        if aa:
+            self._draw_wu_line(x0, y0, x1, y1, color, colorFunc)
+        else:
+            self._draw_bresenham_line(x0, y0, x1, y1, color, colorFunc)
+
+    def _draw_bresenham_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
+        steep = abs(y1 - y0) &gt; abs(x1 - x0)
+        if steep:
+            x0, y0 = y0, x0
+            x1, y1 = y1, x1
+
+        if x0 &gt; x1:
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+
+        dx = x1 - x0
+        dy = abs(y1 - y0)
+
+        err = dx / 2
+
+        if y0 &lt; y1:
+            ystep = 1
+        else:
+            ystep = -1
+
+        count = 0
+        for x in range(x0, x1 + 1):
+            if colorFunc:
+                color = colorFunc(count)
+                count += 1
+
+            if steep:
+                self.set(y0, x, color)
+            else:
+                self.set(x, y0, color)
+
+            err -= dy
+            if err &lt; 0:
+                y0 += ystep
+                err += dx
+
+    def _draw_wu_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
+        funcCount = [0]  # python2 hack since nonlocal not available
+
+        def plot(x, y, level):
+            c = color
+            if colorFunc:
+                c = colorFunc(funcCount[0])
+                funcCount[0] += 1
+
+            c = colors.scale(color, int(255 * level))
+            self.set(int(x), int(y), c)
+
+        def ipart(x):
+            return int(x)
+
+        def fpart(x):
+            return x - math.floor(x)
+
+        def rfpart(x):
+            return 1.0 - fpart(x)
+
+        steep = abs(y1 - y0) &gt; abs(x1 - x0)
+        if steep:
+            x0, y0 = y0, x0
+            x1, y1 = y1, x1
+
+        if x0 &gt; x1:
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+
+        dx = x1 - x0
+        dy = y1 - y0
+        gradient = dy / dx
+
+        # handle first endpoint
+        xend = round(x0)
+        yend = y0 + gradient * (xend - x0)
+        xgap = rfpart(x0 + 0.5)
+        xpxl1 = xend  # this will be used in the main loop
+        ypxl1 = ipart(yend)
+
+        if steep:
+            plot(ypxl1, xpxl1, rfpart(yend) * xgap)
+            plot(ypxl1 + 1, xpxl1, fpart(yend) * xgap)
+        else:
+            plot(xpxl1, ypxl1, rfpart(yend) * xgap)
+            plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap)
+
+        # first y-intersection for the main loop
+        intery = yend + gradient
+
+        # handle second endpoint
+        xend = round(x1)
+        yend = y1 + gradient * (xend - x1)
+        xgap = fpart(x1 + 0.5)
+        xpxl2 = xend  # this will be used in the main loop
+        ypxl2 = ipart(yend)
+
+        if steep:
+            plot(ypxl2, xpxl2, rfpart(yend) * xgap)
+            plot(ypxl2 + 1, xpxl2, fpart(yend) * xgap)
+        else:
+            plot(xpxl2, ypxl2, rfpart(yend) * xgap)
+            plot(xpxl2, ypxl2 + 1, fpart(yend) * xgap)
+
+        # main loop
+        for x in range(int(xpxl1 + 1), int(xpxl2)):
+            if steep:
+                plot(ipart(intery), x, rfpart(intery))
+                plot(ipart(intery) + 1, x, fpart(intery))
+            else:
+                plot(x, ipart(intery), rfpart(intery))
+                plot(x, ipart(intery) + 1, fpart(intery))
+            intery = intery + gradient
+
+    def _draw_fast_vline(self, x, y, h, color=None, aa=False):
+        self.draw_line(x, y, x, y + h - 1, color, aa)
+
+    def _draw_fast_hline(self, x, y, w, color=None, aa=False):
+        self.draw_line(x, y, x + w - 1, y, color, aa)
+
+    def draw_rect(self, x, y, w, h, color=None):
+        &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple&#34;&#34;&#34;
+        self._draw_fast_hline(x, y, w, color)
+        self._draw_fast_hline(x, y + h - 1, w, color)
+        self._draw_fast_vline(x, y, h, color)
+        self._draw_fast_vline(x + w - 1, y, h, color)
+
+    def draw_rect_filled(self, x, y, w, h, color=None, aa=False):
+        &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple&#34;&#34;&#34;
+        for i in range(x, x + w):
+            self._draw_fast_vline(i, y, h, color, aa)
+
+    def draw_round_rect(self, x, y, w, h, r, color=None, aa=False):
+        &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
+        self._draw_fast_hline(x + r, y, w - 2 * r, color, aa)  # Top
+        self._draw_fast_hline(x + r, y + h - 1, w - 2 * r, color, aa)  # Bottom
+        self._draw_fast_vline(x, y + r, h - 2 * r, color, aa)  # Left
+        self._draw_fast_vline(x + w - 1, y + r, h - 2 * r, color, aa)  # Right
+        # draw four corners
+        self._draw_circle_helper(x + r, y + r, r, 1, color)
+        self._draw_circle_helper(x + w - r - 1, y + r, r, 2, color)
+        self._draw_circle_helper(x + w - r - 1, y + h - r - 1, r, 4, color)
+        self._draw_circle_helper(x + r, y + h - r - 1, r, 8, color)
+
+    def draw_round_rect_filled(self, x, y, w, h, r, color=None, aa=False):
+        &#34;&#34;&#34;Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
+        self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
+        self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
+                                 1, h - 2 * r - 1, color)
+        self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)
+
+    def draw_triangle(self, x0, y0, x1, y1, x2, y2, color=None, aa=False):
+        &#34;&#34;&#34;Draw triangle with points `(x0,y0)`, `(x1,y1)`, and `(x2,y2)` and specified `color` tuple.
+
+        `aa (bool)`: If `True` draw anti-aliased lines
+        &#34;&#34;&#34;
+        self.draw_line(x0, y0, x1, y1, color, None, aa)
+        self.draw_line(x1, y1, x2, y2, color, None, aa)
+        self.draw_line(x2, y2, x0, y0, color, None, aa)
+
+    def draw_char(self, x, y, c, color, bg, aa=False, font_name=font.default_font, font_scale=1):
+        &#34;&#34;&#34;Draw a text character `c` with top-left corner placed at `(x,y)` in specified `color`
+
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
+
+        `aa (bool)`: If `True` draw anti-aliased
+
+        `font_name`: Name of font from `spixel.font.fonts`
+
+        `font_scale (int)`: Scale factor to multiple font size by
+        &#34;&#34;&#34;
+        assert font_scale &gt;= 1, &#34;font_scale must be &gt;= 1&#34;
+        f = font.fonts[font_name]
+        fh = f[&#39;height&#39;]
+        FONT = f[&#39;data&#39;]
+
+        c = ord(c)  # make it the int value
+        if c &lt; f[&#39;bounds&#39;][0] or c &gt; f[&#39;bounds&#39;][1]:
+            c_data = f[&#39;undef&#39;]
+        else:
+            c_data = FONT[c - f[&#39;bounds&#39;][0]]
+
+        fw = len(c_data)
+        for i in range(fw + f[&#39;sep&#39;]):
+            xPos = x + (i * font_scale)
+            if ((xPos &lt; self.width) and (xPos + fw * font_scale - 1) &gt;= 0):
+                if i &gt;= fw:
+                    line = 0
+                else:
+                    line = FONT[c][i]
+                for j in range(fh):
+                    yPos = y + (j * font_scale)
+                    if ((yPos &lt; self.height) and
+                            (yPos + fh * font_scale - 1) &gt;= 0):
+                        if line &amp; 0x1:
+                            if font_scale == 1:
+                                self.set(xPos, yPos, color)
+                            else:
+                                self.draw_rect_filled(xPos, yPos, font_scale, font_scale, color, aa)
+                        elif bg != color and bg is not None:
+                            if font_scale == 1:
+                                self.set(xPos, yPos, bg)
+                            else:
+                                self.draw_rect_filled(xPos, yPos, font_scale, font_scale, bg, aa)
+                    line &gt;&gt;= 1
+        return fw + f[&#39;sep&#39;]
+
+    def draw_text(self, text, x=0, y=0,
+                  color=None, bg=colors.Off, aa=False,
+                  font_name=font.default_font, font_scale=1):
+        &#34;&#34;&#34;Draw a text string `text` with top-left corner placed at `(x,y)` in specified `color`
+
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
+
+        `aa (bool)`: If `True` draw anti-aliased
+
+        `font_name`: Name of font from `spixel.font.fonts`
+
+        `font_scale (int)`: Scale factor to multiple font size by
+        &#34;&#34;&#34;
+        fh = font.fonts[font_name][&#39;height&#39;]
+        for c in text:
+            if c == &#39;\n&#39;:
+                y += font_scale * fh
+                x = 0
+            elif c == &#39;\r&#39;:
+                pass  # skip it
+            else:
+                fw = self.draw_char(x, y, c, color, bg, aa, font_name, font_scale)
+                x += font_scale * fw
+                if x &gt;= self.width:
+                    break</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="spixel.pixels.Pixels" href="pixels.html#spixel.pixels.Pixels">Pixels</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="spixel.matrix.Matrix.height"><code class="name">var <span class="ident">height</span></code></dt>
+<dd>
+<section class="desc"><p>X axis dimension of matrix, for querying in animation code</p></section>
+</dd>
+<dt id="spixel.matrix.Matrix.map"><code class="name">var <span class="ident">map</span></code></dt>
+<dd>
+<section class="desc"><p>Current coordinate map object</p></section>
+</dd>
+<dt id="spixel.matrix.Matrix.width"><code class="name">var <span class="ident">width</span></code></dt>
+<dd>
+<section class="desc"><p>X axis dimension of matrix, for querying in animation code</p></section>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="spixel.matrix.Matrix.draw_char"><code class="name flex">
+<span>def <span class="ident">draw_char</span></span>(<span>self, x, y, c, color, bg, aa=False, font_name='6x4', font_scale=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw a text character <code>c</code> with top-left corner placed at <code>(x,y)</code> in specified <code>color</code></p>
+<p><code>bg (tuple)</code>: <code>(R,G,B)</code> color tuple or named value from <a title="spixel.colors" href="colors.html"><code>spixel.colors</code></a> to use as background</p>
+<p><code>aa (bool)</code>: If <code>True</code> draw anti-aliased</p>
+<p><code>font_name</code>: Name of font from <a title="spixel.font.fonts" href="font.html#spixel.font.fonts"><code>fonts</code></a></p>
+<p><code>font_scale (int)</code>: Scale factor to multiple font size by</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_char(self, x, y, c, color, bg, aa=False, font_name=font.default_font, font_scale=1):
+    &#34;&#34;&#34;Draw a text character `c` with top-left corner placed at `(x,y)` in specified `color`
+
+    `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
+
+    `aa (bool)`: If `True` draw anti-aliased
+
+    `font_name`: Name of font from `spixel.font.fonts`
+
+    `font_scale (int)`: Scale factor to multiple font size by
+    &#34;&#34;&#34;
+    assert font_scale &gt;= 1, &#34;font_scale must be &gt;= 1&#34;
+    f = font.fonts[font_name]
+    fh = f[&#39;height&#39;]
+    FONT = f[&#39;data&#39;]
+
+    c = ord(c)  # make it the int value
+    if c &lt; f[&#39;bounds&#39;][0] or c &gt; f[&#39;bounds&#39;][1]:
+        c_data = f[&#39;undef&#39;]
+    else:
+        c_data = FONT[c - f[&#39;bounds&#39;][0]]
+
+    fw = len(c_data)
+    for i in range(fw + f[&#39;sep&#39;]):
+        xPos = x + (i * font_scale)
+        if ((xPos &lt; self.width) and (xPos + fw * font_scale - 1) &gt;= 0):
+            if i &gt;= fw:
+                line = 0
+            else:
+                line = FONT[c][i]
+            for j in range(fh):
+                yPos = y + (j * font_scale)
+                if ((yPos &lt; self.height) and
+                        (yPos + fh * font_scale - 1) &gt;= 0):
+                    if line &amp; 0x1:
+                        if font_scale == 1:
+                            self.set(xPos, yPos, color)
+                        else:
+                            self.draw_rect_filled(xPos, yPos, font_scale, font_scale, color, aa)
+                    elif bg != color and bg is not None:
+                        if font_scale == 1:
+                            self.set(xPos, yPos, bg)
+                        else:
+                            self.draw_rect_filled(xPos, yPos, font_scale, font_scale, bg, aa)
+                line &gt;&gt;= 1
+    return fw + f[&#39;sep&#39;]</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_circle"><code class="name flex">
+<span>def <span class="ident">draw_circle</span></span>(<span>self, x0, y0, r, color=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draws a circle at point <code>(x0,y0)</code> with radius <code>r</code> of the specified RGB <code>color</code> tuple</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_circle(self, x0, y0, r, color=None):
+    &#34;&#34;&#34;
+    Draws a circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple
+    &#34;&#34;&#34;
+    f = 1 - r
+    ddF_x = 1
+    ddF_y = -2 * r
+    x = 0
+    y = r
+
+    self.set(x0, y0 + r, color)
+    self.set(x0, y0 - r, color)
+    self.set(x0 + r, y0, color)
+    self.set(x0 - r, y0, color)
+
+    while x &lt; y:
+        if f &gt;= 0:
+            y -= 1
+            ddF_y += 2
+            f += ddF_y
+        x += 1
+        ddF_x += 2
+        f += ddF_x
+
+        self.set(x0 + x, y0 + y, color)
+        self.set(x0 - x, y0 + y, color)
+        self.set(x0 + x, y0 - y, color)
+        self.set(x0 - x, y0 - y, color)
+        self.set(x0 + y, y0 + x, color)
+        self.set(x0 - y, y0 + x, color)
+        self.set(x0 + y, y0 - x, color)
+        self.set(x0 - y, y0 - x, color)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_circle_filled"><code class="name flex">
+<span>def <span class="ident">draw_circle_filled</span></span>(<span>self, x0, y0, r, color=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draws a filled circle at point <code>(x0,y0)</code> with radius <code>r</code> of the specified RGB <code>color</code> tuple</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_circle_filled(self, x0, y0, r, color=None):
+    &#34;&#34;&#34;Draws a filled circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple&#34;&#34;&#34;
+    self._draw_fast_vline(x0, y0 - r, 2 * r + 1, color)
+    self._draw_circle_filled_helper(x0, y0, r, 3, 0, color)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_line"><code class="name flex">
+<span>def <span class="ident">draw_line</span></span>(<span>self, x0, y0, x1, y1, color=None, colorFunc=None, aa=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw a line from <code>(x0,y0)</code> to <code>(x1,y1)</code> with specified <code>color</code> tuple.</p>
+<p><code>aa (bool)</code>: If <code>True</code> draw anti-aliased line</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_line(self, x0, y0, x1, y1, color=None, colorFunc=None, aa=False):
+    &#34;&#34;&#34;Draw a line from `(x0,y0)` to `(x1,y1)` with specified `color` tuple.
+
+    `aa (bool)`: If `True` draw anti-aliased line
+    &#34;&#34;&#34;
+    if aa:
+        self._draw_wu_line(x0, y0, x1, y1, color, colorFunc)
+    else:
+        self._draw_bresenham_line(x0, y0, x1, y1, color, colorFunc)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_rect"><code class="name flex">
+<span>def <span class="ident">draw_rect</span></span>(<span>self, x, y, w, h, color=None)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw rectangle with top-left corner at <code>(x,y)</code>, width <code>w</code> and height <code>h</code> with specified <code>color</code> tuple</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_rect(self, x, y, w, h, color=None):
+    &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple&#34;&#34;&#34;
+    self._draw_fast_hline(x, y, w, color)
+    self._draw_fast_hline(x, y + h - 1, w, color)
+    self._draw_fast_vline(x, y, h, color)
+    self._draw_fast_vline(x + w - 1, y, h, color)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_rect_filled"><code class="name flex">
+<span>def <span class="ident">draw_rect_filled</span></span>(<span>self, x, y, w, h, color=None, aa=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw rectangle with top-left corner at <code>(x,y)</code>, width <code>w</code> and height <code>h</code> with specified <code>color</code> tuple</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_rect_filled(self, x, y, w, h, color=None, aa=False):
+    &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple&#34;&#34;&#34;
+    for i in range(x, x + w):
+        self._draw_fast_vline(i, y, h, color, aa)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_round_rect"><code class="name flex">
+<span>def <span class="ident">draw_round_rect</span></span>(<span>self, x, y, w, h, r, color=None, aa=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw rectangle with top-left corner at <code>(x,y)</code>, width <code>w</code>, height <code>h</code> and corner radius <code>r</code> with specified <code>color</code> tuple</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_round_rect(self, x, y, w, h, r, color=None, aa=False):
+    &#34;&#34;&#34;Draw rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
+    self._draw_fast_hline(x + r, y, w - 2 * r, color, aa)  # Top
+    self._draw_fast_hline(x + r, y + h - 1, w - 2 * r, color, aa)  # Bottom
+    self._draw_fast_vline(x, y + r, h - 2 * r, color, aa)  # Left
+    self._draw_fast_vline(x + w - 1, y + r, h - 2 * r, color, aa)  # Right
+    # draw four corners
+    self._draw_circle_helper(x + r, y + r, r, 1, color)
+    self._draw_circle_helper(x + w - r - 1, y + r, r, 2, color)
+    self._draw_circle_helper(x + w - r - 1, y + h - r - 1, r, 4, color)
+    self._draw_circle_helper(x + r, y + h - r - 1, r, 8, color)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_round_rect_filled"><code class="name flex">
+<span>def <span class="ident">draw_round_rect_filled</span></span>(<span>self, x, y, w, h, r, color=None, aa=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw filled rectangle with top-left corner at <code>(x,y)</code>, width <code>w</code>, height <code>h</code> and corner radius <code>r</code> with specified <code>color</code> tuple</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_round_rect_filled(self, x, y, w, h, r, color=None, aa=False):
+    &#34;&#34;&#34;Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
+    self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
+    self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
+                             1, h - 2 * r - 1, color)
+    self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_text"><code class="name flex">
+<span>def <span class="ident">draw_text</span></span>(<span>self, text, x=0, y=0, color=None, bg=(0, 0, 0), aa=False, font_name='6x4', font_scale=1)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw a text string <code>text</code> with top-left corner placed at <code>(x,y)</code> in specified <code>color</code></p>
+<p><code>bg (tuple)</code>: <code>(R,G,B)</code> color tuple or named value from <a title="spixel.colors" href="colors.html"><code>spixel.colors</code></a> to use as background</p>
+<p><code>aa (bool)</code>: If <code>True</code> draw anti-aliased</p>
+<p><code>font_name</code>: Name of font from <a title="spixel.font.fonts" href="font.html#spixel.font.fonts"><code>fonts</code></a></p>
+<p><code>font_scale (int)</code>: Scale factor to multiple font size by</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_text(self, text, x=0, y=0,
+              color=None, bg=colors.Off, aa=False,
+              font_name=font.default_font, font_scale=1):
+    &#34;&#34;&#34;Draw a text string `text` with top-left corner placed at `(x,y)` in specified `color`
+
+    `bg (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors` to use as background
+
+    `aa (bool)`: If `True` draw anti-aliased
+
+    `font_name`: Name of font from `spixel.font.fonts`
+
+    `font_scale (int)`: Scale factor to multiple font size by
+    &#34;&#34;&#34;
+    fh = font.fonts[font_name][&#39;height&#39;]
+    for c in text:
+        if c == &#39;\n&#39;:
+            y += font_scale * fh
+            x = 0
+        elif c == &#39;\r&#39;:
+            pass  # skip it
+        else:
+            fw = self.draw_char(x, y, c, color, bg, aa, font_name, font_scale)
+            x += font_scale * fw
+            if x &gt;= self.width:
+                break</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.draw_triangle"><code class="name flex">
+<span>def <span class="ident">draw_triangle</span></span>(<span>self, x0, y0, x1, y1, x2, y2, color=None, aa=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Draw triangle with points <code>(x0,y0)</code>, <code>(x1,y1)</code>, and <code>(x2,y2)</code> and specified <code>color</code> tuple.</p>
+<p><code>aa (bool)</code>: If <code>True</code> draw anti-aliased lines</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw_triangle(self, x0, y0, x1, y1, x2, y2, color=None, aa=False):
+    &#34;&#34;&#34;Draw triangle with points `(x0,y0)`, `(x1,y1)`, and `(x2,y2)` and specified `color` tuple.
+
+    `aa (bool)`: If `True` draw anti-aliased lines
+    &#34;&#34;&#34;
+    self.draw_line(x0, y0, x1, y1, color, None, aa)
+    self.draw_line(x1, y1, x2, y2, color, None, aa)
+    self.draw_line(x2, y2, x0, y0, color, None, aa)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, x, y)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Get pixel color tuple at given <code>(X,Y)</code> coordinate. Can also use the format <code>c = matrix[x, y]</code> instead of calling function.</p>
+<p><code>x (int)</code>: X coordinate of pixel to get</p>
+<p><code>y (int)</code>: Y coordinate of pixel to get</p>
+<p><strong>returns:</strong> <code>(R,G,B)</code> color tuple</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self, x, y):
+    &#34;&#34;&#34;Get pixel color tuple at given `(X,Y)` coordinate. Can also use the format `c = matrix[x, y]` instead of calling function.
+
+    `x (int)`: X coordinate of pixel to get
+
+    `y (int)`: Y coordinate of pixel to get
+
+    **returns:** `(R,G,B)` color tuple
+    &#34;&#34;&#34;
+    i = self.map[y][x]
+    return self.get(i)</code></pre>
+</details>
+</dd>
+<dt id="spixel.matrix.Matrix.set"><code class="name flex">
+<span>def <span class="ident">set</span></span>(<span>self, x, y, color)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Set pixel at given <code>(X,Y)</code> coordinates to color. Can also use the format <code>matrix[x, y] = colors.Red</code> instead of calling function.</p>
+<p><code>x (int)</code>: X coordinate of pixel to set</p>
+<p><code>y (int)</code>: Y coordinate of pixel to set</p>
+<p><code>color (tuple)</code>: <code>(R,G,B)</code> color tuple or named value from <a title="spixel.colors" href="colors.html"><code>spixel.colors</code></a></p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set(self, x, y, color):
+    &#34;&#34;&#34;Set pixel at given `(X,Y)` coordinates to color. Can also use the format `matrix[x, y] = colors.Red` instead of calling function.
+
+    `x (int)`: X coordinate of pixel to set
+
+    `y (int)`: Y coordinate of pixel to set
+
+    `color (tuple)`: `(R,G,B)` color tuple or named value from `spixel.colors`
+    &#34;&#34;&#34;
+    if x &lt; 0 or x &gt;= self.width or y &lt; 0 or y &gt;= self.height:
+        return
+    i = self.map[y][x]
+    super().set(i, color)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="spixel.pixels.Pixels" href="pixels.html#spixel.pixels.Pixels">Pixels</a></b></code>:
+<ul class="hlist">
+<li><code><a title="spixel.pixels.Pixels.buffer" href="pixels.html#spixel.pixels.Pixels.buffer">buffer</a></code></li>
+<li><code><a title="spixel.pixels.Pixels.clear" href="pixels.html#spixel.pixels.Pixels.clear">clear</a></code></li>
+<li><code><a title="spixel.pixels.Pixels.last_index" href="pixels.html#spixel.pixels.Pixels.last_index">last_index</a></code></li>
+<li><code><a title="spixel.pixels.Pixels.num" href="pixels.html#spixel.pixels.Pixels.num">num</a></code></li>
+<li><code><a title="spixel.pixels.Pixels.set_rgb" href="pixels.html#spixel.pixels.Pixels.set_rgb">set_rgb</a></code></li>
+<li><code><a title="spixel.pixels.Pixels.update" href="pixels.html#spixel.pixels.Pixels.update">update</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="spixel" href="index.html">spixel</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="spixel.matrix.make_matrix_coord_map" href="#spixel.matrix.make_matrix_coord_map">make_matrix_coord_map</a></code></li>
+<li><code><a title="spixel.matrix.rotate_and_flip" href="#spixel.matrix.rotate_and_flip">rotate_and_flip</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="spixel.matrix.Matrix" href="#spixel.matrix.Matrix">Matrix</a></code></h4>
+<ul class="">
+<li><code><a title="spixel.matrix.Matrix.draw_char" href="#spixel.matrix.Matrix.draw_char">draw_char</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_circle" href="#spixel.matrix.Matrix.draw_circle">draw_circle</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_circle_filled" href="#spixel.matrix.Matrix.draw_circle_filled">draw_circle_filled</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_line" href="#spixel.matrix.Matrix.draw_line">draw_line</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_rect" href="#spixel.matrix.Matrix.draw_rect">draw_rect</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_rect_filled" href="#spixel.matrix.Matrix.draw_rect_filled">draw_rect_filled</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_round_rect" href="#spixel.matrix.Matrix.draw_round_rect">draw_round_rect</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_round_rect_filled" href="#spixel.matrix.Matrix.draw_round_rect_filled">draw_round_rect_filled</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_text" href="#spixel.matrix.Matrix.draw_text">draw_text</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.draw_triangle" href="#spixel.matrix.Matrix.draw_triangle">draw_triangle</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.get" href="#spixel.matrix.Matrix.get">get</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.height" href="#spixel.matrix.Matrix.height">height</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.map" href="#spixel.matrix.Matrix.map">map</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.set" href="#spixel.matrix.Matrix.set">set</a></code></li>
+<li><code><a title="spixel.matrix.Matrix.width" href="#spixel.matrix.Matrix.width">width</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.4</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
