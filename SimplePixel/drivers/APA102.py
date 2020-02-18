@@ -40,10 +40,10 @@ class APA102(DriverBase):
         # Many thanks to this article for combined APA102/SK9822 protocol
         # https://cpldcpu.com/2016/12/13/sk9822-a-clone-of-the-apa102/
         self._start_frame = 4  # start frame is [0, 0, 0, 0]
-        self._pixel_bytes = self.numLEDs * 4  # 4 byte frames [bright, r, g, b]
+        self._pixel_bytes = self.num * 4  # 4 byte frames [bright, r, g, b]
         self._pixel_stop = self._start_frame + self._pixel_bytes
         self._reset_frame = 4  # for SK9822 [0, 0, 0, 0]
-        self._end_frame = (self.numLEDs // 2) + 1
+        self._end_frame = (self.num // 2) + 1
         self._packet_size = (self._start_frame + self._pixel_bytes +  self._reset_frame + self._end_frame)
         self._packet = [0] * self._packet_size
 
@@ -86,20 +86,20 @@ class APA102(DriverBase):
         Either way, this option is better and faster than scaling in BiblioPixel
         """
         self._chipset_brightness = (val >> 3)  # bitshift to scale from 8 bit to 5
-        self._brightness_list = [0xE0 + self._chipset_brightness] * self.numLEDs
+        self._brightness_list = [0xE0 + self._chipset_brightness] * self.num
         self._packet[self._start_frame + 0:self._pixel_stop:4] = self._brightness_list
 
-    def setMasterBrightness(self, brightness):
+    def set_master_brightness(self, brightness):
         self.set_device_brightness(brightness)
         return True
 
-    def _fixData(self, data):
+    def fix_data(self, data):
         for a, b in enumerate(self.c_order):
-            self._buf[a:self.numLEDs * 3:3] = [self.gamma[v] for v in data[b::3]]
+            self._buf[a:self.num * 3:3] = [self.gamma[v] for v in data[b::3]]
         self._packet[self._start_frame + 1:self._pixel_stop:4] = self._buf[0::3]
         self._packet[self._start_frame + 2:self._pixel_stop:4] = self._buf[1::3]
         self._packet[self._start_frame + 3:self._pixel_stop:4] = self._buf[2::3]
 
     def _update(self, data):
-        self._fixData(data)
+        self.fix_data(data)
         self._sendData()

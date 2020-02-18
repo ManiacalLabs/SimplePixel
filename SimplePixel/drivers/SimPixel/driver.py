@@ -33,7 +33,7 @@ class SimPixel(DriverBase):
 
     def setup(self, pixels):
         super().setup(pixels)
-        sleep(0.1) # needs a little time before starting server
+        sleep(0.1)  # needs a little time before starting server
         self.start()
 
     def start(self):

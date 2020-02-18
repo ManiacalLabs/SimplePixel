@@ -15,14 +15,27 @@ def rotate_and_flip(coord_map, rotation, flip):
     return coord_map
 
 
-def make_matrix_coord_map(dx, dy, serpentine=False, offset=0, rotation=0, y_flip=False):
-    """Helper method to generate X,Y coordinate maps for strips"""
+def make_matrix_coord_map(width, height, serpentine=False, offset=0, rotation=0, y_flip=False):
+    """Helper method to generate X,Y coordinate maps for mapped to 1D pixel lists
+
+    `width (int)`: X axis dimension of matrix
+
+    `height (int)`: Y axis dimension of matrix
+
+    `serpentine (bool)`: Generates map in serpentine pattern instead of always restarting on left
+
+    `offset (int)`: Starting index (for when generating multiple sub-maps)
+
+    `rotation (0, 90, 180, 270)`: Degrees to rotate matrix map by
+
+    `y_flip (bool)`: Flip matrix along Y axis
+    """
     result = []
-    for y in range(dy):
+    for y in range(height):
         if not serpentine or y % 2 == 0:
-            result.append([(dx * y) + x + offset for x in range(dx)])
+            result.append([(width * y) + x + offset for x in range(width)])
         else:
-            result.append([dx * (y + 1) - 1 - x + offset for x in range(dx)])
+            result.append([width * (y + 1) - 1 - x + offset for x in range(width)])
 
     result = rotate_and_flip(result, rotation, y_flip)
 
@@ -30,15 +43,32 @@ def make_matrix_coord_map(dx, dy, serpentine=False, offset=0, rotation=0, y_flip
 
 
 class Matrix(Pixels):
+    """2D Matrix abstraction wrapper around `SimplePixel.pixels.Pixels`
+    to provide `(X,Y)` coordinate mapping. Internally the data is stored as
+    a 1D `SimplePixel.pixels.Pixels` object and `(X,Y)` coordinates are mapped
+    to list indicies.
+
+    `driver`: Instance of class derived from `SimplePixel.drivers.driver_base.DriverBase`
+
+    `width (int)`: X axis dimension of matrix
+
+    `height (int)`: Y axis dimension of matrix
+
+    `coord_map`: 2D matrix mapping `(X,Y)` coordinates to 1D indicies. Will be auto-generated with best-guess if omitted.
+    """
     def __init__(self, driver, width, height, coord_map=None):
         if not coord_map:
             coord_map = make_matrix_coord_map(width, height)
         self.map = coord_map
+        """Current coordinate map object"""
 
         super().__init__(driver, width * height)
 
         self.width = len(self.map)
+        """X axis dimension of matrix, for querying in animation code"""
         self.height = None
+        """X axis dimension of matrix, for querying in animation code"""
+
         for col in self.map:
             y = len(col)
             if self.height is None:
@@ -47,10 +77,9 @@ class Matrix(Pixels):
                 if y != self.height:
                     raise ValueError('All columns of coords must be the same length!')
 
-        self.fonts = font.fonts
-
-    def get_pixel_positions(self):
-        result = [None] * self.numLEDs
+    def _get_pixel_positions(self):
+        """**Internal Use**: Returns pixel_positions object for `SimplePixel.drivers.SimPixel.driver.SimPixel`"""
+        result = [None] * self.num
 
         for y in range(len(self.map)):
             for x in range(len(self.map[y])):
@@ -59,10 +88,30 @@ class Matrix(Pixels):
         return result
 
     def set(self, x, y, color):
+        """Set pixel at given `(X,Y)` coordinates to color. Can also use the format `matrix[x, y] = colors.Red` instead of calling function.
+
+        `x (int)`: X coordinate of pixel to set
+
+        `y (int)`: Y coordinate of pixel to set
+
+        `color (tuple)`: `(R,G,B)` color tuple or named value from `SimplePixel.colors`
+        """
         if x < 0 or x >= self.width or y < 0 or y >= self.height:
             return
         i = self.map[y][x]
         super().set(i, color)
+
+    def get(self, x, y):
+        """Get pixel color tuple at given `(X,Y)` coordinate. Can also use the format `c = matrix[x, y]` instead of calling function.
+
+        `x (int)`: X coordinate of pixel to get
+
+        `y (int)`: Y coordinate of pixel to get
+
+        **returns:** `(R,G,B)` color tuple
+        """
+        i = self.map[y][x]
+        return self.get(i)
 
     def __setitem__(self, pixel, color):
         x, y = pixel
@@ -70,8 +119,7 @@ class Matrix(Pixels):
 
     def __getitem__(self, pixel):
         x, y = pixel
-        i = self.map[y][x]
-        return self.get(i)
+        return self.get(x, y)
 
     ##########################################################################
     # Drawing Functions
@@ -81,7 +129,7 @@ class Matrix(Pixels):
 
     def draw_circle(self, x0, y0, r, color=None):
         """
-        Draws a circle at point x0, y0 with radius r of the specified RGB color
+        Draws a circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple
         """
         f = 1 - r
         ddF_x = 1
@@ -143,7 +191,7 @@ class Matrix(Pixels):
                 self.set(x0 - y, y0 - x, color)
                 self.set(x0 - x, y0 - y, color)
 
-    def _fill_circle_helper(self, x0, y0, r, cornername, delta, color=None):
+    def _draw_circle_filled_helper(self, x0, y0, r, cornername, delta, color=None):
         f = 1 - r
         ddF_x = 1
         ddF_y = -2 * r
@@ -167,19 +215,22 @@ class Matrix(Pixels):
                 self._draw_fast_vline(x0 - x, y0 - y, 2 * y + 1 + delta, color)
                 self._draw_fast_vline(x0 - y, y0 - x, 2 * x + 1 + delta, color)
 
-    def fill_circle(self, x0, y0, r, color=None):
-        """Draws a filled circle at point x0,y0 with radius r and specified color"""
+    def draw_circle_filled(self, x0, y0, r, color=None):
+        """Draws a filled circle at point `(x0,y0)` with radius `r` of the specified RGB `color` tuple"""
         self._draw_fast_vline(x0, y0 - r, 2 * r + 1, color)
-        self._fill_circle_helper(x0, y0, r, 3, 0, color)
+        self._draw_circle_filled_helper(x0, y0, r, 3, 0, color)
 
     def draw_line(self, x0, y0, x1, y1, color=None, colorFunc=None, aa=False):
-        if aa:
-            self.wu_line(x0, y0, x1, y1, color, colorFunc)
-        else:
-            self.bresenham_line(x0, y0, x1, y1, color, colorFunc)
+        """Draw a line from `(x0,y0)` to `(x1,y1)` with specified `color` tuple.
 
-    def bresenham_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
-        """Draw line from point x0,y0 to x,1,y1. Will draw beyond matrix bounds."""
+        `aa (bool)`: If `True` draw anti-aliased line
+        """
+        if aa:
+            self._draw_wu_line(x0, y0, x1, y1, color, colorFunc)
+        else:
+            self._draw_bresenham_line(x0, y0, x1, y1, color, colorFunc)
+
+    def _draw_bresenham_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
         steep = abs(y1 - y0) > abs(x1 - x0)
         if steep:
             x0, y0 = y0, x0
@@ -215,7 +266,7 @@ class Matrix(Pixels):
                 y0 += ystep
                 err += dx
 
-    def wu_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
+    def _draw_wu_line(self, x0, y0, x1, y1, color=None, colorFunc=None):
         funcCount = [0]  # python2 hack since nonlocal not available
 
         def plot(x, y, level):
@@ -296,22 +347,20 @@ class Matrix(Pixels):
     def _draw_fast_hline(self, x, y, w, color=None, aa=False):
         self.draw_line(x, y, x + w - 1, y, color, aa)
 
-    def draw_rect(self, x, y, w, h, color=None, aa=False):
-        """Draw rectangle with top-left corner at x,y, width w and height h"""
-        self._draw_fast_hline(x, y, w, color, aa)
-        self._draw_fast_hline(x, y + h - 1, w, color, aa)
-        self._draw_fast_vline(x, y, h, color, aa)
-        self._draw_fast_vline(x + w - 1, y, h, color, aa)
+    def draw_rect(self, x, y, w, h, color=None):
+        """Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple"""
+        self._draw_fast_hline(x, y, w, color)
+        self._draw_fast_hline(x, y + h - 1, w, color)
+        self._draw_fast_vline(x, y, h, color)
+        self._draw_fast_vline(x + w - 1, y, h, color)
 
-    def fill_rect(self, x, y, w, h, color=None, aa=False):
-        """Draw solid rectangle with top-left corner at x,y, width w and height h"""
+    def draw_rect_filled(self, x, y, w, h, color=None, aa=False):
+        """Draw rectangle with top-left corner at `(x,y)`, width `w` and height `h` with specified `color` tuple"""
         for i in range(x, x + w):
             self._draw_fast_vline(i, y, h, color, aa)
 
     def draw_round_rect(self, x, y, w, h, r, color=None, aa=False):
-        """Draw rectangle with top-left corner at x,y, width w, height h,
-        and corner radius r.
-        """
+        """Draw rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple"""
         self._draw_fast_hline(x + r, y, w - 2 * r, color, aa)  # Top
         self._draw_fast_hline(x + r, y + h - 1, w - 2 * r, color, aa)  # Bottom
         self._draw_fast_vline(x, y + r, h - 2 * r, color, aa)  # Left
@@ -322,22 +371,33 @@ class Matrix(Pixels):
         self._draw_circle_helper(x + w - r - 1, y + h - r - 1, r, 4, color)
         self._draw_circle_helper(x + r, y + h - r - 1, r, 8, color)
 
-    def fill_round_rect(self, x, y, w, h, r, color=None, aa=False):
-        """Draw solid rectangle with top-left corner at x,y, width w, height h,
-        and corner radius r"""
-        self.fill_rect(x + r, y, w - 2 * r, h, color, aa)
-        self._fill_circle_helper(x + w - r - 1, y + r, r,
+    def draw_round_rect_filled(self, x, y, w, h, r, color=None, aa=False):
+        """Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple"""
+        self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
+        self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
                                  1, h - 2 * r - 1, color)
-        self._fill_circle_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)
+        self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)
 
     def draw_triangle(self, x0, y0, x1, y1, x2, y2, color=None, aa=False):
-        """Draw triangle with points x0,y0 - x1,y1 - x2,y2"""
+        """Draw triangle with points `(x0,y0)`, `(x1,y1)`, and `(x2,y2)` and specified `color` tuple.
+
+        `aa (bool)`: If `True` draw anti-aliased lines
+        """
         self.draw_line(x0, y0, x1, y1, color, None, aa)
         self.draw_line(x1, y1, x2, y2, color, None, aa)
         self.draw_line(x2, y2, x0, y0, color, None, aa)
 
     def draw_char(self, x, y, c, color, bg, aa=False, font_name=font.default_font, font_scale=1):
+        """Draw a text character `c` with top-left corner placed at `(x,y)` in specified `color`
 
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `SimplePixel.colors` to use as background
+
+        `aa (bool)`: If `True` draw anti-aliased
+
+        `font_name`: Name of font from `SimplePixel.font.fonts`
+
+        `font_scale (int)`: Scale factor to multiple font size by
+        """
         assert font_scale >= 1, "font_scale must be >= 1"
         f = font.fonts[font_name]
         fh = f['height']
@@ -365,18 +425,28 @@ class Matrix(Pixels):
                             if font_scale == 1:
                                 self.set(xPos, yPos, color)
                             else:
-                                self.fill_rect(xPos, yPos, font_scale, font_scale, color, aa)
+                                self.draw_rect_filled(xPos, yPos, font_scale, font_scale, color, aa)
                         elif bg != color and bg is not None:
                             if font_scale == 1:
                                 self.set(xPos, yPos, bg)
                             else:
-                                self.fill_rect(xPos, yPos, font_scale, font_scale, bg, aa)
+                                self.draw_rect_filled(xPos, yPos, font_scale, font_scale, bg, aa)
                     line >>= 1
         return fw + f['sep']
 
     def draw_text(self, text, x=0, y=0,
                   color=None, bg=colors.Off, aa=False,
                   font_name=font.default_font, font_scale=1):
+        """Draw a text string `text` with top-left corner placed at `(x,y)` in specified `color`
+
+        `bg (tuple)`: `(R,G,B)` color tuple or named value from `SimplePixel.colors` to use as background
+
+        `aa (bool)`: If `True` draw anti-aliased
+
+        `font_name`: Name of font from `SimplePixel.font.fonts`
+
+        `font_scale (int)`: Scale factor to multiple font size by
+        """
         fh = font.fonts[font_name]['height']
         for c in text:
             if c == '\n':

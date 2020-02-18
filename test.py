@@ -1,7 +1,6 @@
 from time import sleep
 from SimplePixel.drivers.SimPixel import SimPixel
-from SimplePixel.pixels import Pixels
-from SimplePixel.matrix import Matrix
+from SimplePixel import Pixels
 from SimplePixel import colors
 
 
@@ -13,7 +12,7 @@ NUM = 16
 
 with SimPixel() as sp:
     pixels = Pixels(sp, NUM)
-    sp.setMasterBrightness(255)
+    sp.set_master_brightness(255)
 
     try:
         while True:
