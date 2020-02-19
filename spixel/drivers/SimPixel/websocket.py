@@ -59,3 +59,4 @@ class Server:
         except:
             pass
         log.info('WebSocket server closed')
+

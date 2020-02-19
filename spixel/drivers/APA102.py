@@ -1,6 +1,6 @@
 from . driver_base import DriverBase, ChannelOrder
 from .. import log
-import spidev
+# import spidev
 
 
 class APA102(DriverBase):
