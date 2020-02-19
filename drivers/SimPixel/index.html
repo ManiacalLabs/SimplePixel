@@ -24,31 +24,264 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from . driver import SimPixel</code></pre>
+<pre><code class="python">import errno, struct, threading, uuid
+from .. driver_base import DriverBase
+from . websocket import Server
+from time import sleep
+
+ADDRESS_IN_USE_ERROR = &#34;&#34;&#34;
+
+Port {0} on your machine is already in use.
+Perhaps BiblioPixel is already running on your machine?
+&#34;&#34;&#34;
+
+class SimPixel(DriverBase):
+
+    def __init__(self, num=1024, port=1337, pixel_positions=None, **kwds):
+        &#34;&#34;&#34;
+        Args:
+            num:  number of LEDs being visualizer.
+            port:  the port on which the SimPixel server is running.
+            pixel_positions:  the positions of the LEDs in 3-d space.
+            **kwds:  keywords passed to DriverBase.
+        &#34;&#34;&#34;
+        super().__init__(num, **kwds)
+        self.port = port
+        self.pixel_positions = self.server = self.thread = None
+        self.websocks = {}
+
+        if pixel_positions:
+            self.set_pixel_positions(pixel_positions)
+
+    def __exit__(self, type, value, traceback):
+        self.cleanup()
+
+    def setup(self, pixels):
+        super().setup(pixels)
+        sleep(0.1)  # needs a little time before starting server
+        self.start()
+
+    def start(self):
+        try:
+            self.server = Server(self.port, driver=self, selectInterval=0.001)
+
+        except OSError as e:
+            if e.errno == errno.EADDRINUSE:
+                e.strerror += ADDRESS_IN_USE_ERROR.format(self.port)
+                e.args = (e.errno, e.strerror)
+            raise
+
+    def set_pixel_positions(self, pixel_positions):
+        if not self.pixel_positions: # ignore if already set
+            # Flatten list of led positions.
+            pl = [c for p in pixel_positions for c in p]
+            self.pixel_positions = bytearray(struct.pack(&#39;&lt;%sh&#39; % len(pl), *pl))
+
+
+    def add_websock(self, oid, send_pixels):
+        self.websocks[oid] = send_pixels
+
+    def remove_websock(self, oid):
+        try:
+            del self.websocks[oid]
+        except KeyError:
+            pass
+
+    def cleanup(self):
+        print(&#39;Closing websocket server...&#39;)
+        self.server.close()
+
+    def _update(self, data):
+        self._buf = data
+        for ws in self.websocks.values():
+            ws(self._buf)
+
+
+__pdoc__ = {}
+__pdoc__[&#39;websocket&#39;] = False
+__pdoc__[&#39;SimpleWebSocketServer&#39;] = False</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt><code class="name"><a title="spixel.drivers.SimPixel.SimpleWebSocketServer" href="SimpleWebSocketServer.html">spixel.drivers.SimPixel.SimpleWebSocketServer</a></code></dt>
+<dt id="spixel.drivers.SimPixel.SimPixel"><code class="flex name class">
+<span>class <span class="ident">SimPixel</span></span>
+<span>(</span><span>num=1024, port=1337, pixel_positions=None, **kwds)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Base driver class on which to derive other drivers.</p>
+<p><code>c_order</code>: <code>ChannelOrder</code> instance to define color channel order if not <code>RGB</code></p>
+<p><code>gamma</code>: Gamma correction table (List of 256 values 0-255)</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>num</code></strong></dt>
+<dd>number of LEDs being visualizer.</dd>
+<dt><strong><code>port</code></strong></dt>
+<dd>the port on which the SimPixel server is running.</dd>
+<dt><strong><code>pixel_positions</code></strong></dt>
+<dd>the positions of the LEDs in 3-d space.</dd>
+<dt><strong><code>**kwds</code></strong></dt>
+<dd>keywords passed to DriverBase.</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SimPixel(DriverBase):
+
+    def __init__(self, num=1024, port=1337, pixel_positions=None, **kwds):
+        &#34;&#34;&#34;
+        Args:
+            num:  number of LEDs being visualizer.
+            port:  the port on which the SimPixel server is running.
+            pixel_positions:  the positions of the LEDs in 3-d space.
+            **kwds:  keywords passed to DriverBase.
+        &#34;&#34;&#34;
+        super().__init__(num, **kwds)
+        self.port = port
+        self.pixel_positions = self.server = self.thread = None
+        self.websocks = {}
+
+        if pixel_positions:
+            self.set_pixel_positions(pixel_positions)
+
+    def __exit__(self, type, value, traceback):
+        self.cleanup()
+
+    def setup(self, pixels):
+        super().setup(pixels)
+        sleep(0.1)  # needs a little time before starting server
+        self.start()
+
+    def start(self):
+        try:
+            self.server = Server(self.port, driver=self, selectInterval=0.001)
+
+        except OSError as e:
+            if e.errno == errno.EADDRINUSE:
+                e.strerror += ADDRESS_IN_USE_ERROR.format(self.port)
+                e.args = (e.errno, e.strerror)
+            raise
+
+    def set_pixel_positions(self, pixel_positions):
+        if not self.pixel_positions: # ignore if already set
+            # Flatten list of led positions.
+            pl = [c for p in pixel_positions for c in p]
+            self.pixel_positions = bytearray(struct.pack(&#39;&lt;%sh&#39; % len(pl), *pl))
+
+
+    def add_websock(self, oid, send_pixels):
+        self.websocks[oid] = send_pixels
+
+    def remove_websock(self, oid):
+        try:
+            del self.websocks[oid]
+        except KeyError:
+            pass
+
+    def cleanup(self):
+        print(&#39;Closing websocket server...&#39;)
+        self.server.close()
+
+    def _update(self, data):
+        self._buf = data
+        for ws in self.websocks.values():
+            ws(self._buf)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="spixel.drivers.driver_base.DriverBase" href="../driver_base.html#spixel.drivers.driver_base.DriverBase">DriverBase</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="spixel.drivers.SimPixel.SimPixel.add_websock"><code class="name flex">
+<span>def <span class="ident">add_websock</span></span>(<span>self, oid, send_pixels)</span>
+</code></dt>
 <dd>
 <section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_websock(self, oid, send_pixels):
+    self.websocks[oid] = send_pixels</code></pre>
+</details>
 </dd>
-<dt><code class="name"><a title="spixel.drivers.SimPixel.driver" href="driver.html">spixel.drivers.SimPixel.driver</a></code></dt>
+<dt id="spixel.drivers.SimPixel.SimPixel.cleanup"><code class="name flex">
+<span>def <span class="ident">cleanup</span></span>(<span>self)</span>
+</code></dt>
 <dd>
 <section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def cleanup(self):
+    print(&#39;Closing websocket server...&#39;)
+    self.server.close()</code></pre>
+</details>
 </dd>
-<dt><code class="name"><a title="spixel.drivers.SimPixel.websocket" href="websocket.html">spixel.drivers.SimPixel.websocket</a></code></dt>
+<dt id="spixel.drivers.SimPixel.SimPixel.remove_websock"><code class="name flex">
+<span>def <span class="ident">remove_websock</span></span>(<span>self, oid)</span>
+</code></dt>
 <dd>
 <section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_websock(self, oid):
+    try:
+        del self.websocks[oid]
+    except KeyError:
+        pass</code></pre>
+</details>
+</dd>
+<dt id="spixel.drivers.SimPixel.SimPixel.start"><code class="name flex">
+<span>def <span class="ident">start</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def start(self):
+    try:
+        self.server = Server(self.port, driver=self, selectInterval=0.001)
+
+    except OSError as e:
+        if e.errno == errno.EADDRINUSE:
+            e.strerror += ADDRESS_IN_USE_ERROR.format(self.port)
+            e.args = (e.errno, e.strerror)
+        raise</code></pre>
+</details>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="spixel.drivers.driver_base.DriverBase" href="../driver_base.html#spixel.drivers.driver_base.DriverBase">DriverBase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="spixel.drivers.driver_base.DriverBase.buf_byte_count" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.buf_byte_count">buf_byte_count</a></code></li>
+<li><code><a title="spixel.drivers.driver_base.DriverBase.fix_data" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.fix_data">fix_data</a></code></li>
+<li><code><a title="spixel.drivers.driver_base.DriverBase.num" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.num">num</a></code></li>
+<li><code><a title="spixel.drivers.driver_base.DriverBase.pixels" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.pixels">pixels</a></code></li>
+<li><code><a title="spixel.drivers.driver_base.DriverBase.set_master_brightness" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.set_master_brightness">set_master_brightness</a></code></li>
+<li><code><a title="spixel.drivers.driver_base.DriverBase.set_pixel_positions" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.set_pixel_positions">set_pixel_positions</a></code></li>
+<li><code><a title="spixel.drivers.driver_base.DriverBase.setup" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.setup">setup</a></code></li>
+<li><code><a title="spixel.drivers.driver_base.DriverBase.update" href="../driver_base.html#spixel.drivers.driver_base.DriverBase.update">update</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -62,11 +295,17 @@
 <li><code><a title="spixel.drivers" href="../index.html">spixel.drivers</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
-<li><code><a title="spixel.drivers.SimPixel.SimpleWebSocketServer" href="SimpleWebSocketServer.html">spixel.drivers.SimPixel.SimpleWebSocketServer</a></code></li>
-<li><code><a title="spixel.drivers.SimPixel.driver" href="driver.html">spixel.drivers.SimPixel.driver</a></code></li>
-<li><code><a title="spixel.drivers.SimPixel.websocket" href="websocket.html">spixel.drivers.SimPixel.websocket</a></code></li>
+<li>
+<h4><code><a title="spixel.drivers.SimPixel.SimPixel" href="#spixel.drivers.SimPixel.SimPixel">SimPixel</a></code></h4>
+<ul class="">
+<li><code><a title="spixel.drivers.SimPixel.SimPixel.add_websock" href="#spixel.drivers.SimPixel.SimPixel.add_websock">add_websock</a></code></li>
+<li><code><a title="spixel.drivers.SimPixel.SimPixel.cleanup" href="#spixel.drivers.SimPixel.SimPixel.cleanup">cleanup</a></code></li>
+<li><code><a title="spixel.drivers.SimPixel.SimPixel.remove_websock" href="#spixel.drivers.SimPixel.SimPixel.remove_websock">remove_websock</a></code></li>
+<li><code><a title="spixel.drivers.SimPixel.SimPixel.start" href="#spixel.drivers.SimPixel.SimPixel.start">start</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
