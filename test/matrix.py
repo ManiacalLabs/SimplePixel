@@ -11,7 +11,7 @@ with SimPixel() as sp:
     m = Matrix(sp, W, H)
     sp.set_master_brightness(255)
 
-    hue_map = colors.diagonal_matrix(16)[::-1]
+    hue_map = colors.diagonal_matrix(16, 16)[::-1]
 
     TEST_FUNCS = [
         lambda: m.draw_circle(W//2, H//2, W//2-1, colors.Orange),
