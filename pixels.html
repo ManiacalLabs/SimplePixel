@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
 <title>spixel.pixels API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Base, simplest object to hold and manage an abstracted pixel buffer." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,13 +20,18 @@
 <h1 class="title">Module <code>spixel.pixels</code></h1>
 </header>
 <section id="section-intro">
+<p>Base, simplest object to hold and manage an abstracted pixel buffer.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Pixels(object):
-    &#34;&#34;&#34;Base, simplest object to hold and manage an abstracted pixel buffer.
-    Holds pixel data in `Pixels.buffer` as `[R,G,B,R,G,B,...]` byte data.
+<pre><code class="python">&#34;&#34;&#34;
+Base, simplest object to hold and manage an abstracted pixel buffer.
+&#34;&#34;&#34;
+
+
+class Pixels(object):
+    &#34;&#34;&#34;Holds pixel data in `Pixels.buffer` as `[R,G,B,R,G,B,...]` byte data.
     This data intentionally has no channel order or color correction.
     Those must be applied by the driver.
 
@@ -115,8 +120,7 @@
 <span>(</span><span>driver, num)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Base, simplest object to hold and manage an abstracted pixel buffer.
-Holds pixel data in <a title="spixel.pixels.Pixels.buffer" href="#spixel.pixels.Pixels.buffer"><code>Pixels.buffer</code></a> as <code>[R,G,B,R,G,B,...]</code> byte data.
+<section class="desc"><p>Holds pixel data in <a title="spixel.pixels.Pixels.buffer" href="#spixel.pixels.Pixels.buffer"><code>Pixels.buffer</code></a> as <code>[R,G,B,R,G,B,...]</code> byte data.
 This data intentionally has no channel order or color correction.
 Those must be applied by the driver.</p>
 <p><code>driver</code>: Instance of class derived from <a title="spixel.drivers.driver_base.DriverBase" href="drivers/driver_base.html#spixel.drivers.driver_base.DriverBase"><code>DriverBase</code></a></p>
@@ -126,8 +130,7 @@ Those must be applied by the driver.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Pixels(object):
-    &#34;&#34;&#34;Base, simplest object to hold and manage an abstracted pixel buffer.
-    Holds pixel data in `Pixels.buffer` as `[R,G,B,R,G,B,...]` byte data.
+    &#34;&#34;&#34;Holds pixel data in `Pixels.buffer` as `[R,G,B,R,G,B,...]` byte data.
     This data intentionally has no channel order or color correction.
     Those must be applied by the driver.
 

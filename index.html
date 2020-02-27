@@ -44,7 +44,12 @@ Arduino library.
 &#34;&#34;&#34;
 
 from . pixels import Pixels
-from . matrix import Matrix</code></pre>
+from . matrix import Matrix
+
+
+__pdoc__ = {}
+# don&#39;t auto-doc log module
+__pdoc__[&#39;log&#39;] = False</code></pre>
 </details>
 </section>
 <section>
@@ -64,17 +69,13 @@ output types.</p></section>
 <dd>
 <section class="desc"><p>Pixel font definitions and helpers for use with <a title="spixel.matrix.Matrix.draw_char" href="matrix.html#spixel.matrix.Matrix.draw_char"><code>Matrix.draw_char()</code></a> and <a title="spixel.matrix.Matrix.draw_text" href="matrix.html#spixel.matrix.Matrix.draw_text"><code>Matrix.draw_text()</code></a> …</p></section>
 </dd>
-<dt><code class="name"><a title="spixel.log" href="log.html">spixel.log</a></code></dt>
-<dd>
-<section class="desc"></section>
-</dd>
 <dt><code class="name"><a title="spixel.matrix" href="matrix.html">spixel.matrix</a></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>2D Matrix abstraction around <a title="spixel.pixels" href="pixels.html"><code>spixel.pixels</code></a> and helper functions.</p></section>
 </dd>
 <dt><code class="name"><a title="spixel.pixels" href="pixels.html">spixel.pixels</a></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Base, simplest object to hold and manage an abstracted pixel buffer.</p></section>
 </dd>
 </dl>
 </section>
@@ -96,7 +97,6 @@ output types.</p></section>
 <li><code><a title="spixel.colors" href="colors.html">spixel.colors</a></code></li>
 <li><code><a title="spixel.drivers" href="drivers/index.html">spixel.drivers</a></code></li>
 <li><code><a title="spixel.font" href="font.html">spixel.font</a></code></li>
-<li><code><a title="spixel.log" href="log.html">spixel.log</a></code></li>
 <li><code><a title="spixel.matrix" href="matrix.html">spixel.matrix</a></code></li>
 <li><code><a title="spixel.pixels" href="pixels.html">spixel.pixels</a></code></li>
 </ul>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
 <title>spixel.matrix API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="2D Matrix abstraction around `spixel.pixels` and helper functions." />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,16 @@
 <h1 class="title">Module <code>spixel.matrix</code></h1>
 </header>
 <section id="section-intro">
+<p>2D Matrix abstraction around <a title="spixel.pixels" href="pixels.html"><code>spixel.pixels</code></a> and helper functions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import math
+<pre><code class="python">&#34;&#34;&#34;
+2D Matrix abstraction around `spixel.pixels` and helper functions.
+&#34;&#34;&#34;
+
+import math
 from . import colors
 from . import font
 from . pixels import Pixels
@@ -401,7 +406,7 @@ class Matrix(Pixels):
         &#34;&#34;&#34;Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
         self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
         self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
-                                 1, h - 2 * r - 1, color)
+                                        1, h - 2 * r - 1, color)
         self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)
 
     def draw_triangle(self, x0, y0, x1, y1, x2, y2, color=None, aa=False):
@@ -911,7 +916,7 @@ to list indicies.</p>
         &#34;&#34;&#34;Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
         self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
         self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
-                                 1, h - 2 * r - 1, color)
+                                        1, h - 2 * r - 1, color)
         self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)
 
     def draw_triangle(self, x0, y0, x1, y1, x2, y2, color=None, aa=False):
@@ -1018,7 +1023,7 @@ to list indicies.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="spixel.matrix.Matrix.draw_char"><code class="name flex">
-<span>def <span class="ident">draw_char</span></span>(<span>self, x, y, c, color, bg, aa=False, font_name='6x4', font_scale=1)</span>
+<span>def <span class="ident">draw_char</span></span>(<span>self, x, y, c, color, bg, aa=False, font_name='8x6', font_scale=1)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Draw a text character <code>c</code> with top-left corner placed at <code>(x,y)</code> in specified <code>color</code></p>
@@ -1224,12 +1229,12 @@ to list indicies.</p>
     &#34;&#34;&#34;Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple&#34;&#34;&#34;
     self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
     self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
-                             1, h - 2 * r - 1, color)
+                                    1, h - 2 * r - 1, color)
     self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)</code></pre>
 </details>
 </dd>
 <dt id="spixel.matrix.Matrix.draw_text"><code class="name flex">
-<span>def <span class="ident">draw_text</span></span>(<span>self, text, x=0, y=0, color=None, bg=(0, 0, 0), aa=False, font_name='6x4', font_scale=1)</span>
+<span>def <span class="ident">draw_text</span></span>(<span>self, text, x=0, y=0, color=None, bg=(0, 0, 0), aa=False, font_name='8x6', font_scale=1)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Draw a text string <code>text</code> with top-left corner placed at <code>(x,y)</code> in specified <code>color</code></p>
