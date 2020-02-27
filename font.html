@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.5" />
 <title>spixel.font API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Pixel font definitions and helpers for use with `spixel.matrix.Matrix.draw_char` and `spixel.matrix.Matrix.draw_text` …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,11 +20,19 @@
 <h1 class="title">Module <code>spixel.font</code></h1>
 </header>
 <section id="section-intro">
+<p>Pixel font definitions and helpers for use with <a title="spixel.matrix.Matrix.draw_char" href="matrix.html#spixel.matrix.Matrix.draw_char"><code>Matrix.draw_char()</code></a> and <a title="spixel.matrix.Matrix.draw_text" href="matrix.html#spixel.matrix.Matrix.draw_text"><code>Matrix.draw_text()</code></a></p>
+<p>3 fonts are currently provided, all monospaced, and defined as part of the <a title="spixel.font.fonts" href="#spixel.font.fonts"><code>fonts</code></a> object.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">GLCDFONT = [
+<pre><code class="python">&#34;&#34;&#34;
+Pixel font definitions and helpers for use with `spixel.matrix.Matrix.draw_char` and `spixel.matrix.Matrix.draw_text`
+
+3 fonts are currently provided, all monospaced, and defined as part of the `fonts` object.
+&#34;&#34;&#34;
+
+GLCDFONT = [
     [0x00, 0x00, 0x00, 0x00, 0x00],
     [0x3E, 0x5B, 0x4F, 0x5B, 0x3E],
     [0x3E, 0x6B, 0x4F, 0x6B, 0x3E],
@@ -673,7 +681,6 @@ LARGEFONT = [
     [0x0000, 0x1f7c, 0x1044, 0x1038, 0x0000, 0x007c, 0x0054, 0x0044]
 ]
 
-fw, fh = 6, 8
 fonts = {
     &#39;8x6&#39;: {
         &#39;data&#39;: GLCDFONT,
@@ -697,13 +704,38 @@ fonts = {
         &#39;sep&#39;: 2
     }
 }
-&#34;&#34;&#34;Font definition for available font objects&#34;&#34;&#34;
+&#34;&#34;&#34;Font definition for available font objects
 
-default_font = &#39;6x4&#39;
+3 fonts are currently available and are named:
+
+- 6x4
+- 8x6
+- 16x8
+
+Each name just being the Y and X dimensions of each character, respectively.
+
+There is no need to use this object directly, instead just pass the desired font name
+to `spixel.matrix.Matrix.draw_char` or `spixel.matrix.Matrix.draw_text` as the `font_name` parameter.
+&#34;&#34;&#34;
+
+default_font = &#39;8x6&#39;
 
 
-def str_dim(text, font=default_font, font_scale=1, final_sep=True):
-    f = fonts[font]
+def str_dim(text, font_name=default_font, font_scale=1, final_sep=True):
+    &#34;&#34;&#34;
+    Calculate the maximum dimensions of a given text string based on the given font.
+
+    `text`: string value to calculate the size for
+
+    `font_name`: font to use for calculation
+
+    `font_scale`: font scale to use for calculation (positive integer value)
+
+    `final_sep (bool)`: If True, include the space taken up by the final character separator as defined in the `fonts` object.
+
+    **returns:** (width, height) size tuple
+    &#34;&#34;&#34;
+    f = fonts[font_name]
     fh = f[&#39;height&#39;]
     FONT = f[&#39;data&#39;]
     y = font_scale * fh
@@ -730,18 +762,7 @@ def str_dim(text, font=default_font, font_scale=1, final_sep=True):
         if not final_sep:
             x_list = [xi - font_scale * f[&#39;sep&#39;] for xi in x_list]
 
-    return (max(x_list), y)
-
-
-def get_font_menu_options():
-    options = {}
-    options_map = []
-    count = 0
-    for k in fonts.keys():
-        options[count] = k
-        options_map.append(k)
-        count += 1
-    return (options, options_map)</code></pre>
+    return (max(x_list), y)</code></pre>
 </details>
 </section>
 <section>
@@ -751,44 +772,51 @@ def get_font_menu_options():
 <dl>
 <dt id="spixel.font.fonts"><code class="name">var <span class="ident">fonts</span></code></dt>
 <dd>
-<section class="desc"><p>Font definition for available font objects</p></section>
+<section class="desc"><p>Font definition for available font objects</p>
+<p>3 fonts are currently available and are named:</p>
+<ul>
+<li>6x4</li>
+<li>8x6</li>
+<li>16x8</li>
+</ul>
+<p>Each name just being the Y and X dimensions of each character, respectively.</p>
+<p>There is no need to use this object directly, instead just pass the desired font name
+to <a title="spixel.matrix.Matrix.draw_char" href="matrix.html#spixel.matrix.Matrix.draw_char"><code>Matrix.draw_char()</code></a> or <a title="spixel.matrix.Matrix.draw_text" href="matrix.html#spixel.matrix.Matrix.draw_text"><code>Matrix.draw_text()</code></a> as the <code>font_name</code> parameter.</p></section>
 </dd>
 </dl>
 </section>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="spixel.font.get_font_menu_options"><code class="name flex">
-<span>def <span class="ident">get_font_menu_options</span></span>(<span>)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_font_menu_options():
-    options = {}
-    options_map = []
-    count = 0
-    for k in fonts.keys():
-        options[count] = k
-        options_map.append(k)
-        count += 1
-    return (options, options_map)</code></pre>
-</details>
-</dd>
 <dt id="spixel.font.str_dim"><code class="name flex">
-<span>def <span class="ident">str_dim</span></span>(<span>text, font='6x4', font_scale=1, final_sep=True)</span>
+<span>def <span class="ident">str_dim</span></span>(<span>text, font_name='8x6', font_scale=1, final_sep=True)</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Calculate the maximum dimensions of a given text string based on the given font.</p>
+<p><code>text</code>: string value to calculate the size for</p>
+<p><code>font_name</code>: font to use for calculation</p>
+<p><code>font_scale</code>: font scale to use for calculation (positive integer value)</p>
+<p><code>final_sep (bool)</code>: If True, include the space taken up by the final character separator as defined in the <a title="spixel.font.fonts" href="#spixel.font.fonts"><code>fonts</code></a> object.</p>
+<p><strong>returns:</strong> (width, height) size tuple</p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def str_dim(text, font=default_font, font_scale=1, final_sep=True):
-    f = fonts[font]
+<pre><code class="python">def str_dim(text, font_name=default_font, font_scale=1, final_sep=True):
+    &#34;&#34;&#34;
+    Calculate the maximum dimensions of a given text string based on the given font.
+
+    `text`: string value to calculate the size for
+
+    `font_name`: font to use for calculation
+
+    `font_scale`: font scale to use for calculation (positive integer value)
+
+    `final_sep (bool)`: If True, include the space taken up by the final character separator as defined in the `fonts` object.
+
+    **returns:** (width, height) size tuple
+    &#34;&#34;&#34;
+    f = fonts[font_name]
     fh = f[&#39;height&#39;]
     FONT = f[&#39;data&#39;]
     y = font_scale * fh
@@ -841,7 +869,6 @@ def get_font_menu_options():
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="spixel.font.get_font_menu_options" href="#spixel.font.get_font_menu_options">get_font_menu_options</a></code></li>
 <li><code><a title="spixel.font.str_dim" href="#spixel.font.str_dim">str_dim</a></code></li>
 </ul>
 </li>
