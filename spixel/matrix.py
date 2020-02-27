@@ -1,3 +1,7 @@
+"""
+2D Matrix abstraction around `spixel.pixels` and helper functions.
+"""
+
 import math
 from . import colors
 from . import font
@@ -375,7 +379,7 @@ class Matrix(Pixels):
         """Draw filled rectangle with top-left corner at `(x,y)`, width `w`, height `h` and corner radius `r` with specified `color` tuple"""
         self.draw_rect_filled(x + r, y, w - 2 * r, h, color, aa)
         self._draw_circle_filled_helper(x + w - r - 1, y + r, r,
-                                 1, h - 2 * r - 1, color)
+                                        1, h - 2 * r - 1, color)
         self._draw_circle_filled_helper(x + r, y + r, r, 2, h - 2 * r - 1, color)
 
     def draw_triangle(self, x0, y0, x1, y1, x2, y2, color=None, aa=False):

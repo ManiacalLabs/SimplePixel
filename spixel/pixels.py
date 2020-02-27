@@ -1,6 +1,10 @@
+"""
+Base, simplest object to hold and manage an abstracted pixel buffer.
+"""
+
+
 class Pixels(object):
-    """Base, simplest object to hold and manage an abstracted pixel buffer.
-    Holds pixel data in `Pixels.buffer` as `[R,G,B,R,G,B,...]` byte data.
+    """Holds pixel data in `Pixels.buffer` as `[R,G,B,R,G,B,...]` byte data.
     This data intentionally has no channel order or color correction.
     Those must be applied by the driver.
 

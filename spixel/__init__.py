@@ -8,3 +8,8 @@ Arduino library.
 
 from . pixels import Pixels
 from . matrix import Matrix
+
+
+__pdoc__ = {}
+# don't auto-doc log module
+__pdoc__['log'] = False
