@@ -1,3 +1,9 @@
+"""
+Pixel font definitions and helpers for use with `spixel.matrix.Matrix.draw_char` and `spixel.matrix.Matrix.draw_text`
+
+3 fonts are currently provided, all monospaced, and defined as part of the `fonts` object.
+"""
+
 GLCDFONT = [
     [0x00, 0x00, 0x00, 0x00, 0x00],
     [0x3E, 0x5B, 0x4F, 0x5B, 0x3E],
@@ -647,7 +653,6 @@ LARGEFONT = [
     [0x0000, 0x1f7c, 0x1044, 0x1038, 0x0000, 0x007c, 0x0054, 0x0044]
 ]
 
-fw, fh = 6, 8
 fonts = {
     '8x6': {
         'data': GLCDFONT,
@@ -671,13 +676,38 @@ fonts = {
         'sep': 2
     }
 }
-"""Font definition for available font objects"""
+"""Font definition for available font objects
 
-default_font = '6x4'
+3 fonts are currently available and are named:
+
+- 6x4
+- 8x6
+- 16x8
+
+Each name just being the Y and X dimensions of each character, respectively.
+
+There is no need to use this object directly, instead just pass the desired font name
+to `spixel.matrix.Matrix.draw_char` or `spixel.matrix.Matrix.draw_text` as the `font_name` parameter.
+"""
+
+default_font = '8x6'
 
 
-def str_dim(text, font=default_font, font_scale=1, final_sep=True):
-    f = fonts[font]
+def str_dim(text, font_name=default_font, font_scale=1, final_sep=True):
+    """
+    Calculate the maximum dimensions of a given text string based on the given font.
+
+    `text`: string value to calculate the size for
+
+    `font_name`: font to use for calculation
+
+    `font_scale`: font scale to use for calculation (positive integer value)
+
+    `final_sep (bool)`: If True, include the space taken up by the final character separator as defined in the `fonts` object.
+
+    **returns:** (width, height) size tuple
+    """
+    f = fonts[font_name]
     fh = f['height']
     FONT = f['data']
     y = font_scale * fh
@@ -705,14 +735,3 @@ def str_dim(text, font=default_font, font_scale=1, final_sep=True):
             x_list = [xi - font_scale * f['sep'] for xi in x_list]
 
     return (max(x_list), y)
-
-
-def get_font_menu_options():
-    options = {}
-    options_map = []
-    count = 0
-    for k in fonts.keys():
-        options[count] = k
-        options_map.append(k)
-        count += 1
-    return (options, options_map)
