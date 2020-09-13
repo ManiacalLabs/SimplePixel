@@ -1,35 +1,30 @@
-# Functions to convert HSV colors to RGB colors lovingly ported from FastLED
-#
-#  The basically fall into two groups: spectra, and rainbows.
-#  Spectra and rainbows are not the same thing.  Wikipedia has a good
-#  illustration here
-#   http://upload.wikimedia.org//wikipedia//commons//f//f6//Prism_compare_rainbow_01.png
-#  from this article
-#   http://en.wikipedia.org//wiki//Rainbow#Number_of_colours_in_spectrum_or_rainbow
-#  that shows a 'spectrum' and a 'rainbow' side by side.  Among other
-#  differences, you'll see that a 'rainbow' has much more yellow than
-#  a plain spectrum.  "Classic" LED color washes are spectrum based, and
-#  usually show very little yellow.
-#
-#  Wikipedia's page on HSV color space, with pseudocode for conversion
-#  to RGB color space
-#   http://en.wikipedia.org//wiki//HSL_and_HSV
-#  Note that their conversion algorithm, which is (naturally) very popular
-#  is in the "maximum brightness at any given hue" style, vs the "uniform
-#  brightness for all hues" style.
-#
-#  You can't have both; either purple is the same brightness as red, e.g
-#    red = #FF0000 and purple = #800080 -> same "total light" output
-#  OR purple is 'as bright as it can be', e.g.
-#    red = #FF0000 and purple = #FF00FF -> purple is much brighter than red.
-#  The colorspace conversions here try to keep the apparent brightness
-#  constant even as the hue varies.
-#
-#  Adafruit's "Wheel" function, discussed here
-#   http://forums.adafruit.com//viewtopic.php?f=47&t=22483
-#  is also of the "constant apparent brightness" variety.
-#
-# More details here: https://github.com//FastLED//FastLED//wiki//FastLED-HSV-Colors
+"""
+Functions to convert HSV colors to RGB colors lovingly ported from FastLED
+
+Note that the way `spixel` handles colors falls into basically
+two groups: spectra and rainbows.
+Spectra and rainbows are not the same thing.
+This [Wikipedia article](http://en.wikipedia.org/wiki/Rainbow#Number_of_colours_in_spectrum_or_rainbow)
+has a good illustration:
+![](http://upload.wikimedia.org/wikipedia/commons/f/f6/Prism_compare_rainbow_01.png)
+
+**Rainbow (middle: real, bottom: computed) compared to true spectrum (top): unsaturated colours and different colour profile**
+
+Among other differences, you'll see that a 'rainbow' has much more yellow than
+a plain spectrum.  "Classic" LED color washes are spectrum based, and
+usually show very little yellow.
+
+This module also makes available many colors by their [HTML/X11 color names](https://en.wikipedia.org/wiki/Web_colors#X11_color_names) such as:
+
+```
+colors.RoyalBlue
+colors.Lime
+colors.Red
+colors.DarkRed
+colors.Black
+colors.Off # alias to colors.Black
+```
+"""
 
 from __future__ import division
 import colorsys
@@ -37,24 +32,28 @@ import math
 
 
 def scale(color, level):
-    """Scale RGB tuple by level, 0 - 255"""
+    """Scale `color` RGB tuple by `level` (0 - 255)"""
     return tuple([(i * level) >> 8 for i in list(color)])
 
 
 def blend(a, b):
-    """Performs a Screen blend on RGB color tuples, a and b"""
+    """Performs a [Screen blend](https://en.wikipedia.org/wiki/Blend_modes#Screen)
+    on RGB color tuples, `a` and `b` and returns a new RGB color tuple"""
     return (255 - (((255 - a[0]) * (255 - b[0])) >> 8), 255 - (((255 - a[1]) * (255 - b[1])) >> 8), 255 - (((255 - a[2]) * (255 - b[2])) >> 8))
 
 
 def gamma_correct(color, gamma):
-    """Applies a gamma correction to an RGB color tuple"""
+    """Applies a gamma correction to an RGB tuple `color`.
+
+    `gamma` must be a list of 256 8-bit (0-255) values defining the gamma correction at each level.
+    """
     return (gamma[color[0]], gamma[color[1]], gamma[color[2]])
 
 
 def hsv2rgb_raw(hsv):
     """
     Converts an HSV tuple to RGB. Intended for internal use.
-    You should use hsv2rgb_spectrum or hsv2rgb_rainbow instead.
+    You should use `hsv2rgb_spectrum` or `hsv2rgb_rainbow` instead.
     """
 
     HSV_SECTION_3 = 0x40
@@ -110,7 +109,14 @@ def hsv2rgb_raw(hsv):
 
 
 def hsv2rgb_spectrum(hsv):
-    """Generates RGB values from  HSV values in line with a typical light spectrum"""
+    """Generates RGB values from HSV values in line with a typical light spectrum.
+
+    If S & V values are unneeded, use `hue2rgb_spectrum` instead as it's a simple value lookup and much faster.
+
+    `hsv`: hue, saturation, value tuple where all are 8-bit values
+
+    **returns:** RGB color tuple
+    """
     h, s, v = hsv
     return hsv2rgb_raw(((h * 192) >> 8, s, v))
 
@@ -141,7 +147,13 @@ def _scale8_video_LEAVING_R1_DIRTY(i, scale):
 
 def hsv2rgb_rainbow(hsv):
     """Generates RGB values from HSV that have an even visual distribution.
-       Be careful as this method is only have as fast as hsv2rgb_spectrum.
+    Be careful as this method is only half as fast as `hsv2rgb_spectrum`.
+
+    If S & V values are unneeded, use `hue2rgb_rainbow` instead as it's a simple value lookup and much faster.
+
+    `hsv`: hue, saturation, value tuple where all are 8-bit values
+
+    **returns:** RGB color tuple
     """
 
     h, s, v = hsv
@@ -210,7 +222,11 @@ def hsv2rgb_rainbow(hsv):
 def hsv2rgb_360(hsv):
     """
     Python default hsv to rgb conversion for when hue values 0-359 are preferred.
-    Due to requiring float math, this method is slower than hsv2rgb_rainbow and hsv2rgb_spectrum.
+    Due to requiring float math, this method is slower than `hsv2rgb_rainbow` and `hsv2rgb_spectrum`.
+
+    `hsv`: hue (0-359), saturation (0.0 - 1.0), value (0.0 - 1.0)
+
+    **returns:** RGB color tuple
     """
 
     h, s, v = hsv
@@ -228,6 +244,14 @@ hue_360 = [hsv2rgb_360((hue, 1.0, 1.0)) for hue in range(360)]
 
 
 def hue2rgb_raw(hue):
+    """Fast hue to rgb conversion via lookup table.
+
+    `hue`: 8-bit hue value
+
+    **returns:** RGB color tuple
+
+    """
+
     if hue >= 0 or hue < 256:
         return hue_raw[hue]
     else:
@@ -235,6 +259,13 @@ def hue2rgb_raw(hue):
 
 
 def hue2rgb_rainbow(hue):
+    """Fast hue to rgb conversion via lookup table using more natural rainbow gradient.
+
+    `hue`: 8-bit hue value
+
+    **returns:** RGB color tuple
+
+    """
     if hue >= 0 or hue < 256:
         return hue_rainbow[hue]
     else:
@@ -242,6 +273,13 @@ def hue2rgb_rainbow(hue):
 
 
 def hue2rgb_spectrum(hue):
+    """Fast hue to rgb conversion via lookup table using even color distribution spectrum.
+
+    `hue`: 8-bit hue value
+
+    **returns:** RGB color tuple
+
+    """
     if hue >= 0 or hue < 256:
         return hue_spectrum[hue]
     else:
@@ -249,6 +287,13 @@ def hue2rgb_spectrum(hue):
 
 
 def hue2rgb_360(hue):
+    """Fast hue to rgb conversion via lookup table when 0 - 359 hue values are preferred.
+
+    `hue`: 8-bit hue value
+
+    **returns:** RGB color tuple
+
+    """
     if hue >= 0 or hue < 360:
         return hue_360[hue]
     else:
@@ -260,7 +305,12 @@ hue2rgb = hue2rgb_rainbow
 
 
 def hex2rgb(hex):
-    """Helper for converting RGB and RGBA hex values to Color"""
+    """Helper for converting RGB hex values to Color
+
+    `hex`: string value representing hex color. Such as #FF00cd or EE1127
+
+    **returns:** RGB color tuple
+    """
     hex = hex.strip('#')
     if len(hex) == 6:
         split = (hex[0:2], hex[2:4], hex[4:6])
@@ -299,6 +349,9 @@ _wheel = _gen_wheel()
 def wheel_color(position):
     """Get color from wheel value (0 - 384).
     Provided for those used to using it from Adafruit libraries
+
+    As discussed [here](http://forums.adafruit.com/viewtopic.php?f=47&t=22483)
+    `wheel()` is of the "constant apparent brightness" variety of color functions.
     """
     if position < 0:
         position = 0
@@ -308,7 +361,7 @@ def wheel_color(position):
     return _wheel[position]
 
 
-def even_dist(start, stop, steps):
+def _even_dist(start, stop, steps):
     steps -= 1
     start = float(start)
     stop = float(stop)
@@ -317,6 +370,16 @@ def even_dist(start, stop, steps):
 
 
 def hue_gradient(start, stop, steps):
+    """Generates a list of RGB color tuples over a specific color range
+
+    `start`: staring 8-bit hue value
+
+    `stop`: ending 8-bit hue value
+
+    `steps`: number of values over which to spread the gradient
+
+    **returns:** List of RGB color tuples
+    """
     assert (start >= 0 and start < 256) and (
         stop >= 0 and stop < 256), "hue must be between 0 and 255"
     flip = False
@@ -324,7 +387,7 @@ def hue_gradient(start, stop, steps):
         start, stop = stop, start
         flip = True
 
-    stops = even_dist(start, stop, steps)
+    stops = _even_dist(start, stop, steps)
 
     if flip:
         stops = stops[::-1]
@@ -333,24 +396,105 @@ def hue_gradient(start, stop, steps):
 
 
 def hue_helper(pos, length, cycle_step):
+    """Helper function for cycling through a hue gradient
+
+    `pos`: current position in the cycle
+
+    `length`: length of cycle
+
+    `cycle_step`: total number of values in cycle
+
+    **returns:** RGB tuple color value given inputs
+
+    **Example:**
+
+    ```
+    # cycle through a moving rainbow on a strip of 100 pixels
+    for step in range(256): # 256 ensures it loops the entire hue gradient
+        for pos in range(pixels.num):
+            pixels[pos] = colors.hue_helper(pos, pixels.num, step)
+        pixels.update()
+    ```
+    """
+
     return hue2rgb(((pos * 255 // length) + cycle_step) % 255)
 
 
 def hue_helper360(pos, length, cycle_step):
+    """Helper function for cycling through a hue gradient but using the
+    slightly more granular 0 - 359 hue values
+
+    `pos`: current position in the cycle
+
+    `length`: length of cycle
+
+    `cycle_step`: total number of values in cycle
+
+    **returns:** RGB tuple color value given inputs
+
+    **Example:**
+
+    ```
+    # cycle through a moving rainbow on a strip of 100 pixels
+    for step in range(360): # 360 ensures it loops the entire hue gradient
+        for pos in range(pixels.num):
+            pixels[pos] = colors.hue_helper(pos, pixels.num, step)
+        pixels.update()
+    ```
+    """
     return hue2rgb_360(((pos * 360 // length) + cycle_step) % 360)
 
 
 def wheel_helper(pos, length, cycle_step):
-    """Helper for wheel_color that distributes colors over length and allows shifting position"""
+    """Helper function for cycling through a hue gradient but using the
+    Adafruit `wheel_color` function.
+
+    `pos`: current position in the cycle
+
+    `length`: length of cycle
+
+    `cycle_step`: total number of values in cycle
+
+    **returns:** RGB tuple color value given inputs
+
+    **Example:**
+
+    ```
+    # cycle through a moving rainbow on a strip of 100 pixels
+    for step in range(384): # 384 ensures it loops the entire hue gradient
+        for pos in range(pixels.num):
+            pixels[pos] = colors.hue_helper(pos, pixels.num, step)
+        pixels.update()
+    ```
+    """
     return wheel_color(((pos * WHEEL_MAX // length) + cycle_step) % WHEEL_MAX)
 
 
-def genVector(width, height, x_mult=1, y_mult=1):
+def gen_vector(width, height, x_mult=1, y_mult=1):
     """Generates a map of vector lengths from the center point to each coordinate
-    widht - width of matrix to generate
-    height - height of matrix to generate
-    x_mult - value to scale x-axis by
-    y_mult - value to scale y-axis by
+
+    `width`: width of matrix to generate
+
+    `height`: height of matrix to generate
+
+    `x_mult`: value to scale x-axis by
+
+    `y_mult`: value to scale y-axis by
+
+    **returns**: 2D maxtrix list of coordinate distances, rounded to the nearest int
+
+    Note that the coordinates are accessed as Y,X instead of X,Y. i.e. `vectors[y][x]`
+
+    **Example**:
+
+    ```
+    vectors = colors.gen_vector(32, 32)
+    for y in range(matrix.height):
+        for x in range(matrix.width):
+            c = colors.hue_helper(self.vectors[y][x], matrix.height, s)
+            matrix.set(x, y, c)
+
+    ```
     """
     centerX = (width - 1) / 2.0
     centerY = (height - 1) / 2.0
@@ -359,6 +503,15 @@ def genVector(width, height, x_mult=1, y_mult=1):
 
 
 def diagonal_matrix(d, offset=0):
+    """
+    Applies a hue gradient diagonally to a matrix and returns a lookup table of RGB color tuples
+
+    `d` - size of both width and height dimensions of the matrix since both must be the same
+
+    **returns**: 2D maxtrix list of RGB color tuples
+
+    Note that the colors are accessed as Y,X instead of X,Y. i.e. `d_matrix[y][x]`
+    """
     hues = hue_gradient(0, 255, d+d-1)
     return [[hues[(x+y+(d*y))%d + ((d-1) if x >= (d-y) else 0)] for x in range(d)] for y in range(d)]
 
