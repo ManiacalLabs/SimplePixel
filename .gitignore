@@ -21,3 +21,5 @@ htmlcov
 doc/reference
 doctrees
 _doc
+
+.vscode

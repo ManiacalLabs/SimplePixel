@@ -1,15 +1,16 @@
 from time import sleep
 from spixel.drivers.SimPixel import SimPixel
-from spixel import Matrix
+from spixel.drivers.serial import Serial, LEDTYPE
+from spixel import Matrix, make_matrix_coord_map
 from spixel import colors
 from spixel import log
 
-W = 32
-H = 32
+W = 5
+H = 5
 
-with SimPixel() as sp:
-    m = Matrix(sp, W, H)
-    sp.set_master_brightness(255)
+with Serial(LEDTYPE.WS2801) as sp:
+    m = Matrix(sp, W, H, True)
+    sp.set_master_brightness(32)
 
     hue_map = colors.diagonal_matrix(16)[::-1]
 
@@ -27,20 +28,21 @@ with SimPixel() as sp:
     ]
 
     try:
-        while True:
-            for f in TEST_FUNCS:
-                m.clear()
-                f()
-                m.update()
-                sleep(1)
+        # while True:
+        #     for f in TEST_FUNCS:
+        #         m.clear()
+        #         f()
+        #         m.update()
+        #         sleep(1)
 
-            # for step in range(256):
-            #     for x in range(W):
-            #         for y in range(H):
-            #             c = colors.hue2rgb((hue_map[y][x] + step) % 255)
-            #             m[x, y] = c
-            #     m.update()
-            #     sleep(0.01)
+        while True:
+            for step in range(256):
+                for x in range(W):
+                    for y in range(H):
+                        c = colors.hue2rgb((hue_map[y][x] + step) % 255)
+                        m[x, y] = c
+                m.update()
+                sleep(0.01)
 
     except KeyboardInterrupt:
         m.clear()

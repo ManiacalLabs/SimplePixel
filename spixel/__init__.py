@@ -6,4 +6,4 @@ framework written in the spirit of [FastLED](http://fastled.io/)
 """
 
 from . pixels import Pixels
-from . matrix import Matrix
+from . matrix import Matrix, make_matrix_coord_map

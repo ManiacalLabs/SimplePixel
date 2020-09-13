@@ -11,15 +11,14 @@ Perhaps BiblioPixel is already running on your machine?
 
 class SimPixel(DriverBase):
 
-    def __init__(self, num=1024, port=1337, pixel_positions=None, **kwds):
+    def __init__(self, port=1337, pixel_positions=None, **kwds):
         """
         Args:
-            num:  number of LEDs being visualizer.
             port:  the port on which the SimPixel server is running.
             pixel_positions:  the positions of the LEDs in 3-d space.
-            **kwds:  keywords passed to DriverBase.
+            **kwds:  keywords passed to `spixel.drivers.driver_base.DriverBase`.
         """
-        super().__init__(num, **kwds)
+        super().__init__(**kwds)
         self.port = port
         self.pixel_positions = self.server = self.thread = None
         self.websocks = {}

@@ -56,9 +56,9 @@ class Matrix(Pixels):
 
     `coord_map`: 2D matrix mapping `(X,Y)` coordinates to 1D indicies. Will be auto-generated with best-guess if omitted.
     """
-    def __init__(self, driver, width, height, coord_map=None):
+    def __init__(self, driver, width, height, serpentine=False, rotation=0, y_flip=False, coord_map=None):
         if not coord_map:
-            coord_map = make_matrix_coord_map(width, height)
+            coord_map = make_matrix_coord_map(width, height, serpentine, 0, rotation, y_flip)
         self.map = coord_map
         """Current coordinate map object"""
 

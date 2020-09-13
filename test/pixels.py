@@ -1,5 +1,6 @@
 from time import sleep
 from spixel.drivers.SimPixel import SimPixel
+from spixel.drivers.serial import Serial, LEDTYPE
 from spixel import Pixels
 from spixel import colors
 
@@ -8,46 +9,46 @@ def make_strip_coord_map_positions(num):
     return [[x, 0, 0] for x in range(num)]
 
 
-NUM = 16
+NUM = 25
 
-with SimPixel() as sp:
-    pixels = Pixels(sp, NUM)
-    sp.set_master_brightness(255)
+with Serial(LEDTYPE.WS2801) as d:
+    pixels = Pixels(d, NUM)
+    d.set_master_brightness(32)
 
     try:
         while True:
             pixels.clear()
-            for i in range(16):
+            for i in range(NUM):
                 pixels[i] = colors.Red
-            sp.update()
+            d.update()
             sleep(1)
 
             pixels.clear()
-            for i in range(16):
+            for i in range(NUM):
                 pixels[i] = colors.Green
-            sp.update()
+            d.update()
             sleep(1)
 
             pixels.clear()
-            for i in range(16):
+            for i in range(NUM):
                 pixels[i] = colors.Blue
-            sp.update()
+            d.update()
             sleep(1)
 
             pixels.clear()
-            for i in range(16):
+            for i in range(NUM):
                 pixels[i] = colors.White
-            sp.update()
+            d.update()
             sleep(1)
 
-            # for s in range(0, 256):
-            #     pixels.clear()
-            #     for i in range(16):
-            #         pixels.set(i, colors.hue_rainbow[s])
-            #     sp.update()
-            #     sleep(0.01)
+            for s in range(0, 256):
+                pixels.clear()
+                for i in range(NUM):
+                    pixels.set(i, colors.hue_rainbow[s])
+                d.update()
+                sleep(0.01)
 
     except KeyboardInterrupt:
-        # matrix.clear()
-        sp.update()
+        pixels.clear()
+        d.update()
         sleep(1)
